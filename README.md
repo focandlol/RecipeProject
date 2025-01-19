@@ -138,3 +138,10 @@
   - `order`: 정렬 방식 (예: `asc`, `desc`)
 
 ---
+
+## tech stack
+- Spring Boot
+- Mysql
+- OAuth 2.0 + JWT
+- OpenAI api -> api 명세 보는곳 https://platform.openai.com/docs/api-reference/chat
+- Redis
