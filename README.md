@@ -6,7 +6,7 @@
 ---
 
 ## ERD
-
+![Image](https://github.com/user-attachments/assets/18a1d5f5-68f5-4d07-a453-f5812ddf9d2d)
 ---
 
 ## 주요 기능
