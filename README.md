@@ -140,5 +140,5 @@
 - Spring Boot
 - Mysql
 - OAuth 2.0 + JWT
-- OpenAI api -> api 명세 보는곳 https://platform.openai.com/docs/api-reference/chat
+- OpenAI api ->  명세 https://platform.openai.com/docs/api-reference/chat
 - Redis
