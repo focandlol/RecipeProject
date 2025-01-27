@@ -63,15 +63,12 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 
   /**
    * 사용자 인증: 기존 사용자 업데이트 또는 신규 사용자 등록
+   * 함수형으로 변경
    */
   private OAuth2User authenticate(String username, Oauth2Response oauth2Response) {
-    Optional<UserEntity> existingUser = userRepository.findByUsername(username);
-
-    if (existingUser.isPresent()) {
-      return updateUser(existingUser.get(), oauth2Response);
-    } else {
-      return registerNewUser(username, oauth2Response);
-    }
+    return userRepository.findByUsername(username)
+        .map(user -> updateUser(user, oauth2Response))
+        .orElseGet(() -> registerNewUser(username, oauth2Response));
   }
 
   /**
