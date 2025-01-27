@@ -18,12 +18,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class JwtUtil {
+public class JwtProvider {
 
   private final SecretKey secretKey;
   private final Long tokenValidTime;
 
-  public JwtUtil(@Value("${spring.jwt.secret}") String secret,
+  public JwtProvider(@Value("${spring.jwt.secret}") String secret,
       @Value("${spring.jwt.time}") Long tokenTime) {
     secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8),
         Jwts.SIG.HS256.key().build().getAlgorithm());

@@ -1,7 +1,7 @@
 package focandlol.recipeproject.auth.config;
 
 import focandlol.recipeproject.auth.jwt.JwtFilter;
-import focandlol.recipeproject.auth.jwt.JwtUtil;
+import focandlol.recipeproject.auth.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +20,7 @@ public class SecurityConfig {
 
   private final DefaultOAuth2UserService customOauth2UserService;
   private final SimpleUrlAuthenticationSuccessHandler customOauth2AuthenticationSuccessHandler;
-  private final JwtUtil jwtUtil;
+  private final JwtProvider jwtProvider;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -33,7 +33,7 @@ public class SecurityConfig {
                 (userInfoEndpointConfig) -> userInfoEndpointConfig.userService(customOauth2UserService))
             .successHandler(customOauth2AuthenticationSuccessHandler));
 
-    http.addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+    http.addFilterBefore(new JwtFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
 
     http.authorizeHttpRequests((auth) -> auth.requestMatchers("/").permitAll()
             .anyRequest().authenticated());

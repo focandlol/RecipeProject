@@ -16,7 +16,7 @@ public class JwtFilter extends OncePerRequestFilter {
   private static final String AUTHORIZATION_HEADER = "Authorization";
   private static final String BEARER = "Bearer ";
 
-  private final JwtUtil jwtUtil;
+  private final JwtProvider jwtProvider;
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -24,7 +24,7 @@ public class JwtFilter extends OncePerRequestFilter {
     try {
       String token = getToken(request);
       if (token != null) {
-        Authentication authentication = jwtUtil.authentication(token);
+        Authentication authentication = jwtProvider.authentication(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
       }
     } catch (Exception e) {

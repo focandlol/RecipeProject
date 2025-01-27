@@ -1,7 +1,7 @@
 package focandlol.recipeproject.auth.handler;
 
 import focandlol.recipeproject.auth.dto.CustomOauth2User;
-import focandlol.recipeproject.auth.jwt.JwtUtil;
+import focandlol.recipeproject.auth.jwt.JwtProvider;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-  private final JwtUtil jwtUtil;
+  private final JwtProvider jwtProvider;
 
   /**
    * Oauth2 인증 성공 시 호출
@@ -59,6 +59,6 @@ public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         .map(a -> a.getAuthority())
         .collect(Collectors.toList());
 
-    return jwtUtil.createJwt(user, roles);
+    return jwtProvider.createJwt(user, roles);
   }
 }
