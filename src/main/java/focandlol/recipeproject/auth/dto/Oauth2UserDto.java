@@ -19,7 +19,7 @@ public class Oauth2UserDto {
   private String username;
   private String name;
   private String email;
-  private List<String> role;
+  private List<String> roles;
 
   public static Oauth2UserDto from(UserEntity user) {
     return Oauth2UserDto.builder()
@@ -27,7 +27,7 @@ public class Oauth2UserDto {
         .username(user.getUsername())
         .name(user.getName())
         .email(user.getEmail())
-        .role(user.getRoles().stream().map(a -> a.toString()).collect(Collectors.toList()))
+        .roles(user.getRoles().stream().map(a -> a.toString()).collect(Collectors.toList()))
         .build();
   }
 

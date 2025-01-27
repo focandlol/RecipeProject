@@ -41,7 +41,7 @@ public class JwtUtil {
         .username(getUsername(jws))
         .name(getName(jws))
         .email(getEmail(jws))
-        .role(getRoles(jws))
+        .roles(getRoles(jws))
         .build();
 
     CustomOauth2User customOauth2User = new CustomOauth2User(oauth2UserDto);
