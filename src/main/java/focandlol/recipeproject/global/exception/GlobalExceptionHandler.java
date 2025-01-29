@@ -13,9 +13,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Order(2)
 public class GlobalExceptionHandler {
 
-  /**
-   * 나중에 CustomException 같은 거 추가할 예정
-   */
+  @ExceptionHandler(CustomException.class)
+  public ResponseEntity<ErrorResponse> handleCustomException(CustomException e) {
+    return ResponseEntity.status(e.getStatus()).body(new ErrorResponse(e.getErrorCode()));
+  }
 
   @ExceptionHandler(AccessDeniedException.class)
   public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException e) {
