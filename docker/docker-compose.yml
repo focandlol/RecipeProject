@@ -1,0 +1,13 @@
+version: '1'
+services:
+  recipe-app:
+    image: recipe-app:0.0.1
+    container_name: recipe
+    ports:
+      - "8080:8080"
+    networks:
+      - recipe
+
+networks:
+  recipe:
+    driver: bridge
