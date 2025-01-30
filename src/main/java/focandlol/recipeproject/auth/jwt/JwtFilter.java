@@ -29,10 +29,11 @@ public class JwtFilter extends OncePerRequestFilter {
       }
     } catch (Exception e) {
       /**
-       * 추후 filter들에서 발생하는 예외를 exceptionHandler로 처리하기 위한 빌드업
-       * 아직 미구현
+       * 토큰 인증 과정에서 발생한 예외 catch
+       * 요청 속성에 예외 객체 저장
+       * 이후 CustomAuthenticationEntryPoint에서 예외 처리
        */
-      request.setAttribute("exception", e);
+      request.setAttribute("ex", e);
     }
     filterChain.doFilter(request, response);
   }
@@ -42,6 +43,7 @@ public class JwtFilter extends OncePerRequestFilter {
    */
   private String getToken(HttpServletRequest request) {
     String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
+
     if (authorizationHeader == null || !authorizationHeader.startsWith(BEARER)) {
       return null;
     }
