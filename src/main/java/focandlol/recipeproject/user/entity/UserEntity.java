@@ -1,6 +1,6 @@
 package focandlol.recipeproject.user.entity;
 
-import focandlol.recipeproject.common.BaseEntity;
+import focandlol.recipeproject.global.entity.BaseEntity;
 import focandlol.recipeproject.type.UserType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;

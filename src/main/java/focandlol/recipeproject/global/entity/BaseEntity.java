@@ -1,4 +1,4 @@
-package focandlol.recipeproject.common;
+package focandlol.recipeproject.global.entity;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
