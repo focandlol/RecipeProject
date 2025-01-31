@@ -1,5 +1,7 @@
 package focandlol.recipeproject.tag.service;
 
+import static focandlol.recipeproject.type.RedisTag.TAG_RANKING;
+
 import focandlol.recipeproject.tag.dto.TagDto;
 import focandlol.recipeproject.tag.entity.TagEntity;
 import focandlol.recipeproject.tag.repository.TagRepository;
@@ -17,6 +19,9 @@ public class TagServiceImpl implements TagService {
   private final TagRepository tagRepository;
   private final RedisTemplate redisTemplate;
 
+  /**
+   * 태그 추가
+   */
   @Override
   public List<TagDto> add(List<String> names) {
     Set<String> exist = tagRepository.findByNameIn(names)
@@ -35,8 +40,11 @@ public class TagServiceImpl implements TagService {
         .collect(Collectors.toList());
   }
 
+  /**
+   * redis에 태그 저장
+   */
   private void saveRedis(TagEntity saved) {
     redisTemplate.opsForZSet()
-        .add("tag_ranking", saved.getName(), saved.getCount().doubleValue());
+        .add(TAG_RANKING.toString(), saved.getName(), saved.getCount().doubleValue());
   }
 }
