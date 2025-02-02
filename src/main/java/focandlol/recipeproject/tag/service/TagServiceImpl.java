@@ -1,7 +1,9 @@
 package focandlol.recipeproject.tag.service;
 
-import static focandlol.recipeproject.type.RedisTag.TAG_RANKING;
+import static focandlol.recipeproject.global.exception.ErrorCode.*;
 
+import focandlol.recipeproject.global.exception.CustomException;
+import focandlol.recipeproject.global.exception.ErrorCode;
 import focandlol.recipeproject.tag.dto.TagDto;
 import focandlol.recipeproject.tag.entity.TagEntity;
 import focandlol.recipeproject.tag.repository.TagRepository;
@@ -9,15 +11,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class TagServiceImpl implements TagService {
 
   private final TagRepository tagRepository;
-  private final RedisTemplate redisTemplate;
+  private final TagRedisService tagRedisService;
 
   /**
    * 태그 추가
@@ -34,17 +37,38 @@ public class TagServiceImpl implements TagService {
 
     List<TagEntity> savedTags = (List<TagEntity>) tagRepository.saveAll(newTags);
 
+    //redis 저장
+    tagRedisService.saveTagInRedis(names,1);
+
     return savedTags.stream()
-        .peek(saved -> saveRedis(saved))
         .map(TagDto::from)
         .collect(Collectors.toList());
   }
 
+  @Override
+  public void delete(List<String> tags){
+    //db에서 삭제
+    tagRepository.deleteAllByNameIn(tags);
+    //redis에서 삭제
+    tagRedisService.deleteTagInRedis(tags);
+  }
+
   /**
-   * redis에 태그 저장
+   * @param tag 원래 태그명
+   * @param change 바꿀 태그명
    */
-  private void saveRedis(TagEntity saved) {
-    redisTemplate.opsForZSet()
-        .add(TAG_RANKING.toString(), saved.getName(), saved.getCount().doubleValue());
+  public void update(String tag, String change){
+    //바꾹 태그명이 이미 존재하면 예외
+    tagRepository.findByName(change)
+        .ifPresent(a -> {throw new CustomException(EXIST_TAG);});
+
+    //원래 태그가 없으면 예외
+    TagEntity tagEntity = tagRepository.findByName(tag)
+        .orElseThrow(() -> new CustomException(INVALID_TAG));
+
+    tagEntity.setName(change);
+
+    //redis 수정
+    tagRedisService.updateTagInRedis(tag, change);
   }
 }
