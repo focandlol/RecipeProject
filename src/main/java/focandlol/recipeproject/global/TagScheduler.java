@@ -58,7 +58,7 @@ public class TagScheduler {
   }
 
   private Set<ZSetOperations.TypedTuple<String>> getTagRanking() {
-    return redisTemplate.opsForZSet().rangeWithScores(TAG_RANKING, 0, -1);
+    return redisTemplate.opsForZSet().rangeWithScores(TAG_RANKING.toString(), 0, -1);
   }
 
 }

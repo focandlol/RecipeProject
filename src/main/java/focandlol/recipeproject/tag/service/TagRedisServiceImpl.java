@@ -1,7 +1,6 @@
 package focandlol.recipeproject.tag.service;
 
 import static focandlol.recipeproject.global.exception.ErrorCode.*;
-import static focandlol.recipeproject.type.RedisTag.AUTOCOMPLETE;
 import static focandlol.recipeproject.type.RedisTag.TAG_RANKING;
 
 import focandlol.recipeproject.autocomplete.service.AutoCompleteService;
@@ -11,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 
@@ -20,12 +20,18 @@ public class TagRedisServiceImpl implements TagRedisService {
 
   private final RedisTemplate redisTemplate;
   private final AutoCompleteService autoCompleteService;
+  private final KafkaTemplate<String, List<String>> kafkaTemplate;
 
   @Override
   public void saveTagInRedis(List<String> tags, double score) {
     saveTagRanking(tags, score);
     //태그 자동완성 캐시
-    autoCompleteService.addAuto(tags);
+    //autoCompleteService.addAuto(tags);
+
+    /**
+     * partition 수 3개, consumer 수 3개 설정
+     */
+    kafkaTemplate.send("auto-complete-topic",tags);
   }
 
   /**
@@ -55,9 +61,8 @@ public class TagRedisServiceImpl implements TagRedisService {
   public void deleteTagInRedis(List<String> tags) {
     redisTemplate.opsForZSet().remove(TAG_RANKING.toString(), tags.toArray());
 
-    //원래 단어만 삭제
-    Object[] array = tags.stream().map(a -> a + "#").toArray();
-    redisTemplate.opsForZSet().remove(AUTOCOMPLETE.toString(), array);
+    //autoCompleteService.delAuto(tags);
+    kafkaTemplate.send("auto-complete-delete-topic",tags);
   }
 
   //태그 사용 횟수 캐시
