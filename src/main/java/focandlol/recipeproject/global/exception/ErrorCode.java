@@ -25,7 +25,10 @@ public enum ErrorCode {
   /**
    * 시스템 에러
    */
-  INTERNAL_SERVER_ERROR("서버 오류입니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+  INTERNAL_SERVER_ERROR("서버 오류입니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+
+  INVALID_TAG("존재하지 않는 태그입니다.",BAD_REQUEST),
+  EXIST_TAG("이미 존재하는 태그입니다",BAD_REQUEST);
 
   private final String description;
   private final HttpStatus status;
