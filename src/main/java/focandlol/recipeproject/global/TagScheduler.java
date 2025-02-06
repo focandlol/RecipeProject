@@ -28,7 +28,7 @@ public class TagScheduler {
   /**
    * redis, db 동기화 insert 쿼리를 묶기 위해 batchUpdate, rewriteBatchedStatements=true 사용
    */
-  @Scheduled(fixedRate = 10000)
+  //@Scheduled(fixedRate = 10000)
   @Transactional
   public void syncTagRanking() {
     Set<ZSetOperations.TypedTuple<String>> tagRanking = getTagRanking();
