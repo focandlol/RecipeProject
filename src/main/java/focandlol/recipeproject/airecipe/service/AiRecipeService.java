@@ -4,6 +4,7 @@ import static focandlol.recipeproject.global.exception.ErrorCode.*;
 
 import focandlol.recipeproject.airecipe.dto.AiRecipeDto;
 import focandlol.recipeproject.airecipe.dto.AiRecipeSearchDto;
+import focandlol.recipeproject.airecipe.dto.AiRecipeUpdateDto;
 import focandlol.recipeproject.airecipe.dto.CreateAiRecipeDto;
 import focandlol.recipeproject.airecipe.entity.AiRecipeEntity;
 import focandlol.recipeproject.airecipe.entity.AiRecipeTagEntity;
@@ -12,15 +13,18 @@ import focandlol.recipeproject.airecipe.repository.AiRecipeRepository;
 import focandlol.recipeproject.airecipe.repository.AiRecipeTagRepository;
 import focandlol.recipeproject.auth.dto.CustomOauth2User;
 import focandlol.recipeproject.global.exception.CustomException;
-import focandlol.recipeproject.global.exception.ErrorCode;
 import focandlol.recipeproject.tag.entity.TagEntity;
+import focandlol.recipeproject.tag.repository.TagRepository;
 import focandlol.recipeproject.tag.service.TagService;
 import focandlol.recipeproject.user.entity.UserEntity;
 import focandlol.recipeproject.user.repository.UserRepository;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +38,7 @@ public class AiRecipeService {
   private final AiRecipeRepository aiRecipeRepository;
   private final AiRecipeTagRepository aiRecipeTagRepository;
   private final AiRecipeQueryRepository aiRecipeQueryRepository;
+  private final TagRepository tagRepository;
 
   public String generateRecipe(CreateAiRecipeDto createAiRecipeDto, CustomOauth2User user) {
     UserEntity userEntity = userRepository.findById(user.getId())
@@ -82,6 +87,96 @@ public class AiRecipeService {
             .tag(tag)
             .build()).collect(Collectors.toList()));
 
+  }
+
+  @Transactional
+  public AiRecipeUpdateDto.Response updateRecipe(@AuthenticationPrincipal CustomOauth2User user
+      ,Long id, AiRecipeUpdateDto.Request request) {
+
+    AiRecipeEntity aiRecipe = aiRecipeRepository.findById(id)
+        .orElseThrow(() -> new CustomException(AI_RECIPE_NOT_FOUND));
+
+    validateUpdateRecipe(user, aiRecipe);
+
+    List<String> list = aiRecipeTagRepository.findTagNamesByRecipeId(id);
+
+    Set<String> tags = new HashSet<>(request.getTags());
+
+    //삭제할 태그들
+    //원래 태그들 중에서 변경될 태그들에 포함되지 태그들 삭제
+    List<String> rmTag = findRemove(list, tags);
+
+    //추가될 태그들
+    //원래 저장되어 있던 태그들에 포함되지 않은 태그들 저장
+    List<String> save = findSave(list, tags);
+
+    //태그 저장
+    tagService.add(save);
+
+    //저장한 태그 조회
+    List<TagEntity> getTag = tagRepository.findByNameIn(save);
+
+    //ai_recipe_tag 조회
+    aiRecipeTagRepository.saveAll(getTag.stream()
+        .map(tag -> AiRecipeTagEntity.builder()
+            .aiRecipe(aiRecipe)
+            .tag(tag)
+            .build()).collect(Collectors.toList()));
+
+    //아까 가져온 삭제할 태그들 삭제
+    aiRecipeTagRepository.deleteRecipeTagIn(id, rmTag);
+
+    //제목, 내용 수정
+    aiRecipe.setContent(request.getContent());
+    aiRecipe.setName(request.getName());
+
+    return AiRecipeUpdateDto.Response.builder()
+        .id(aiRecipe.getId())
+        .tags(new ArrayList<>(tags))
+        .name(request.getName())
+        .content(request.getContent())
+        .build();
+
+  }
+
+  @Transactional
+  public void deleteRecipe(@AuthenticationPrincipal CustomOauth2User user, Long id) {
+    validateDeleteRecipe(user, id);
+
+    aiRecipeRepository.deleteById(id);
+  }
+
+  private void validateDeleteRecipe(CustomOauth2User user, Long id) {
+    UserEntity userEntity = userRepository.findById(user.getId())
+        .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+    AiRecipeEntity aiRecipe = aiRecipeRepository.findById(id)
+        .orElseThrow(() -> new CustomException(AI_RECIPE_NOT_FOUND));
+
+    if(!aiRecipe.getUser().equals(userEntity)) {
+      throw new CustomException(ANOTHER_USER);
+    }
+  }
+
+  private void validateUpdateRecipe(CustomOauth2User user, AiRecipeEntity aiRecipe) {
+    UserEntity userEntity = userRepository.findById(user.getId())
+        .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+    if(!aiRecipe.getUser().equals(userEntity)) {
+      throw new CustomException(ANOTHER_USER);
+    }
+  }
+
+  private List<String> findSave(List<String> list, Set<String> tags) {
+    return tags.stream()
+        .filter(tag -> !list.contains(tag))
+        .collect(Collectors.toList());
+  }
+
+  private List<String> findRemove(List<String> list, Set<String> tags) {
+    return list.stream()
+        .filter(tag -> !tags.contains(tag))
+        .collect(Collectors.toList());
   }
 
   @Transactional

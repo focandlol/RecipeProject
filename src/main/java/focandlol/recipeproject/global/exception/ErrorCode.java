@@ -36,7 +36,11 @@ public enum ErrorCode {
 
   FAILED_ROLLBACK("롤백 실패",HttpStatus.INTERNAL_SERVER_ERROR),
 
-  FAILED_SAVE_TAG("태그 저장 실패",HttpStatus.INTERNAL_SERVER_ERROR);
+  FAILED_SAVE_TAG("태그 저장 실패",HttpStatus.INTERNAL_SERVER_ERROR),
+
+  AI_RECIPE_NOT_FOUND("존재하지 않는 레시피입니다",BAD_REQUEST),
+
+  ANOTHER_USER("작성자가 다릅니다.",BAD_REQUEST);
 
   private final String description;
   private final HttpStatus status;
