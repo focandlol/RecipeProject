@@ -28,7 +28,15 @@ public enum ErrorCode {
   INTERNAL_SERVER_ERROR("서버 오류입니다.", HttpStatus.INTERNAL_SERVER_ERROR),
 
   INVALID_TAG("존재하지 않는 태그입니다.",BAD_REQUEST),
-  EXIST_TAG("이미 존재하는 태그입니다",BAD_REQUEST);
+  EXIST_TAG("이미 존재하는 태그입니다",BAD_REQUEST),
+
+  USER_NOT_FOUND("존재하지 않는 유저입니다",BAD_REQUEST),
+
+  TOO_MANY_RECIPE("AI 레시피는 10개까지만 생성 가능합니다.",BAD_REQUEST),
+
+  FAILED_ROLLBACK("롤백 실패",HttpStatus.INTERNAL_SERVER_ERROR),
+
+  FAILED_SAVE_TAG("태그 저장 실패",HttpStatus.INTERNAL_SERVER_ERROR);
 
   private final String description;
   private final HttpStatus status;

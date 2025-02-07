@@ -18,7 +18,6 @@ public class AutoCompleteConsumer {
 
   @KafkaListener(topics = "auto-complete-topic", groupId = "autocomplete-group")
   public void addTag(List<String> tags, Acknowledgment ack) {
-    System.out.println("kafka");
     for (String tag : tags) {
       String n = tag.trim();
       // 단어의 모든 접두어를 score 0으로 저장
@@ -39,8 +38,6 @@ public class AutoCompleteConsumer {
 
   @KafkaListener(topics = "auto-complete-delete-topic", groupId = "autocomplete-group")
   public void deleteTag(List<String> tags, Acknowledgment ack) {
-    System.out.println("kafka-delete");
-
     //원래 단어 삭제
     Object[] array = tags.stream().map(a -> a + "#").toArray();
     redisTemplate.opsForZSet().remove(AUTOCOMPLETE.toString(), array);
