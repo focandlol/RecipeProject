@@ -24,9 +24,7 @@ public class AiRecipeController {
   @PostMapping("/airecipe")
   public String createRecipe(@AuthenticationPrincipal CustomOauth2User user,
       @RequestBody CreateAiRecipeDto createAiRecipeDto) {
-    String s = apiService.generateRecipe(createAiRecipeDto, user);
-    aiRecipeService.saveRecipe(s, createAiRecipeDto, user);
-    return s;
+    return aiRecipeService.generateRecipe(createAiRecipeDto, user);
   }
 
   @GetMapping("/airecipe")

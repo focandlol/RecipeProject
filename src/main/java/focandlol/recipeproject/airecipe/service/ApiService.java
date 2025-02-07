@@ -41,17 +41,6 @@ public class ApiService {
   }
 
   public String generateRecipe(CreateAiRecipeDto createAiRecipeDto, CustomOauth2User user) {
-
-    UserEntity userEntity = userRepository.findById(user.getId())
-        .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
-
-    long count = aiRecipeRepository.countByUserId(userEntity.getId());
-
-    //해당 사용자가 ai 레시피를 이미 10개 이상 만들었다면 예외
-    if(count > 10){
-      throw new CustomException(TOO_MANY_RECIPE);
-    }
-
     //요청 내용 생성
     String content = getContent(createAiRecipeDto);
 

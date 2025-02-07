@@ -19,22 +19,42 @@ import focandlol.recipeproject.user.entity.UserEntity;
 import focandlol.recipeproject.user.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class AiRecipeService {
 
   private final UserRepository userRepository;
   private final TagService tagService;
+  private final ApiService apiService;
   private final AiRecipeRepository aiRecipeRepository;
   private final AiRecipeTagRepository aiRecipeTagRepository;
   private final AiRecipeQueryRepository aiRecipeQueryRepository;
 
-  public void saveRecipe(String recipe, CreateAiRecipeDto createAiRecipeDto, CustomOauth2User user){
+  public String generateRecipe(CreateAiRecipeDto createAiRecipeDto, CustomOauth2User user) {
+    UserEntity userEntity = userRepository.findById(user.getId())
+        .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+    long count = aiRecipeRepository.countByUserId(userEntity.getId());
+
+    //해당 사용자가 ai 레시피를 이미 10개 이상 만들었다면 예외
+    if (count > 10) {
+      throw new CustomException(TOO_MANY_RECIPE);
+    }
+    String recipe = apiService.generateRecipe(createAiRecipeDto, user);
+
+    saveRecipe(recipe, createAiRecipeDto, user);
+
+    return recipe;
+  }
+
+  @Transactional
+  public void saveRecipe(String recipe, CreateAiRecipeDto createAiRecipeDto,
+      CustomOauth2User user) {
 
     List<String> seper = seperateContent(recipe);
 
@@ -55,23 +75,22 @@ public class AiRecipeService {
     //저장된 태그 가져오기
     List<TagEntity> tags = tagService.findByNameIn(createAiRecipeDto.getTags());
 
-    List<AiRecipeTagEntity> list = new ArrayList<>();
-
-    for (TagEntity tag : tags) {
-      list.add(AiRecipeTagEntity.builder().aiRecipe(save).tag(tag).build());
-    }
-
     //ai_recipe_tag 저장
-    aiRecipeTagRepository.saveAll(list);
+    aiRecipeTagRepository.saveAll(tags.stream()
+        .map(tag -> AiRecipeTagEntity.builder()
+            .aiRecipe(save)
+            .tag(tag)
+            .build()).collect(Collectors.toList()));
 
   }
 
-  public List<AiRecipeDto> getRecipe(CustomOauth2User user, AiRecipeSearchDto aiRecipeSearchDto){
-    return AiRecipeDto.from(aiRecipeQueryRepository.findAiRecipe(user,aiRecipeSearchDto));
+  @Transactional
+  public List<AiRecipeDto> getRecipe(CustomOauth2User user, AiRecipeSearchDto aiRecipeSearchDto) {
+    return AiRecipeDto.from(aiRecipeQueryRepository.findAiRecipe(user, aiRecipeSearchDto));
   }
 
   //레시피에서 제목, 내용 분리
-  private List<String> seperateContent(String recipe){
+  private List<String> seperateContent(String recipe) {
     List<String> list = new ArrayList<>();
 
     String[] parts = recipe.trim().split("\n", 2); // 첫 번째 줄(제목)과 나머지를 분리

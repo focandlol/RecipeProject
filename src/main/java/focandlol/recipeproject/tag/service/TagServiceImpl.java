@@ -59,15 +59,17 @@ public class TagServiceImpl implements TagService {
     LocalDateTime now = LocalDateTime.now();
     List<RLock> locks = new ArrayList<>();
 
+    long start = System.currentTimeMillis();
+
     try {
       for (String name : tags) {
         String lockKey = "lock:" + name;
         RLock lock = redissonClient.getLock(lockKey);
-        int count = 0;
+        //int count = 0;
 
         while (true) {
           if (lock.isLocked()) {
-            count++;
+           // count++;
           } else {
             /**
              * count가 0이면 락을 얻기 위해 처음 시도하는 것
@@ -78,23 +80,23 @@ public class TagServiceImpl implements TagService {
              * 누군가 이미 얻은적 있는데 락이 안 걸려 있다 -> 이미 해당 태그가 redis, db에 저장되었다
              * 따라서 break하고 다음 태그로
              */
-            if (count == 0) {
+            //if (count == 0) {
               Double has = redisTemplate.opsForZSet().score(TAG_RANKING.toString(), name);
               if (has != null) {
                 break;
               }
 
-              boolean get = lock.tryLock(0, 10, TimeUnit.SECONDS);
+              boolean get = lock.tryLock(5, 10, TimeUnit.SECONDS);
               if (get) {
                 locks.add(lock); // 해제할 락 목록에 추가
                 batchArgs.add(new Object[]{name, 0, now, now});
                 break;
               } else {
-                count++;
+                //count++;
               }
-            } else {
-              break;
-            }
+//            } else {
+//              break;
+//            }
           }
         }
       }
@@ -113,6 +115,8 @@ public class TagServiceImpl implements TagService {
       }
     }
 
+    long end = System.currentTimeMillis();
+
     ArrayList<String> get = new ArrayList<>(tags);
 
     List<TagEntity> savedTags = tagRepository.findByNameIn(get);
@@ -124,19 +128,12 @@ public class TagServiceImpl implements TagService {
   }
 
   /**
-   * 레시피, ai레시피 생성 시
-   * 태그 저장 후 바로 db에서 조회 필요
-   * 따라서 직접 commit
-   * 혹시나 누군가가 batchUpdate 하고 commit되기 전에
-   * 또 다른 누군가가 select 하면 조회가 안되니까 즉시 강제 커밋
-   *
-   * 예시)
-   * 유저 a : 사과, 배, 등등
-   * 유저 b : 사과
-   * 동시 요청 시
-   * 유저 a가 락을 얻고 batchUpdate 하고 밑에 남은 코드 실행(AiRecipeService.saveRecipe) -> 아직 db에 사과 안들어감
-   * 유저 b가 유저 a 트랜잭션이 끝나기 전에 AiRecipeService.saveRecipe로 돌아가 select 태그
-   * 사과 태그 조회 안됨 -> 레시피 저장도 못함
+   * 레시피, ai레시피 생성 시 태그 저장 후 바로 db에서 조회 필요 따라서 직접 commit 혹시나 누군가가 batchUpdate 하고 commit되기 전에 또 다른
+   * 누군가가 select 하면 조회가 안되니까 즉시 강제 커밋
+   * <p>
+   * 예시) 유저 a : 사과, 배, 등등 유저 b : 사과 동시 요청 시 유저 a가 락을 얻고 batchUpdate 하고 밑에 남은 코드
+   * 실행(AiRecipeService.saveRecipe) -> 아직 db에 사과 안들어감 유저 b가 유저 a 트랜잭션이 끝나기 전에
+   * AiRecipeService.saveRecipe로 돌아가 select 태그 사과 태그 조회 안됨 -> 레시피 저장도 못함
    */
   private void batchUpdate(String sql, List<Object[]> batchArgs) {
     Connection connection = null;
@@ -156,7 +153,7 @@ public class TagServiceImpl implements TagService {
         }
       }
       throw new CustomException(FAILED_SAVE_TAG);
-    }finally {
+    } finally {
       DataSourceUtils.releaseConnection(connection, dataSource);
     }
   }
@@ -177,20 +174,32 @@ public class TagServiceImpl implements TagService {
    */
   @Transactional
   public void update(String tag, String change) {
-    //바꾹 태그명이 이미 존재하면 예외
-    tagRepository.findByName(change)
-        .ifPresent(a -> {
-          throw new CustomException(EXIST_TAG);
-        });
+    String lockKey = "lock:" + change;
+    RLock lock = redissonClient.getLock(lockKey);
 
-    //원래 태그가 없으면 예외
-    TagEntity tagEntity = tagRepository.findByName(tag)
-        .orElseThrow(() -> new CustomException(INVALID_TAG));
+    try {
+      if (lock.tryLock(3, 10, TimeUnit.SECONDS)) {
+        //바꾹 태그명이 이미 존재하면 예외
+        tagRepository.findByName(change)
+            .ifPresent(a -> {
+              throw new CustomException(EXIST_TAG);
+            });
 
-    tagEntity.setName(change);
+        //원래 태그가 없으면 예외
+        TagEntity tagEntity = tagRepository.findByName(tag)
+            .orElseThrow(() -> new CustomException(INVALID_TAG));
 
-    //redis 수정
-    tagRedisService.updateTagInRedis(tag, change);
+        tagEntity.setName(change);
+        //redis 수정
+        tagRedisService.updateTagInRedis(tag, change);
+      }
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    } finally {
+      if (lock.isHeldByCurrentThread()) {
+        lock.unlock();
+      }
+    }
   }
 
   @Transactional
