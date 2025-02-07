@@ -35,9 +35,16 @@ public class AiRecipeQueryRepository {
             containKeyword(aiRecipeSearchDto.getKeyword())
         )
         .groupBy(aiRecipeEntity.id)
-        .having(aiRecipeTagEntity.count().eq((long) aiRecipeSearchDto.getTags().size()))
+        .having(havingCheck(aiRecipeSearchDto.getTags()))
         .orderBy(order(aiRecipeSearchDto.isUpper()))
         .fetch();
+  }
+
+  private BooleanExpression havingCheck(List<String> tags) {
+    if(tags == null || tags.isEmpty()){
+      return null;
+    }
+    return aiRecipeTagEntity.count().gt((long) tags.size());
   }
 
   private BooleanExpression eqUser(Long userId){
