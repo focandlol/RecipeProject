@@ -15,6 +15,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
@@ -31,10 +33,12 @@ public class AiRecipeTagEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "ai_recipe_id", nullable = false)
+  @OnDelete(action = OnDeleteAction.CASCADE)
   private AiRecipeEntity aiRecipe;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "tag_id", nullable = false)
+  @OnDelete(action = OnDeleteAction.CASCADE)
   private TagEntity tag;
 
 }
