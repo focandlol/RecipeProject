@@ -48,4 +48,9 @@ public class AiRecipeEntity extends BaseEntity {
   @JoinColumn(name = "user_id", nullable = false)
   private UserEntity user;
 
+  public void updateRecipe(String name, String content){
+    this.name = name;
+    this.content = content;
+  }
+
 }

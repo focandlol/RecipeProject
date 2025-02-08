@@ -111,24 +111,27 @@ public class AiRecipeService {
     List<String> save = findSave(list, tags);
 
     //태그 저장
-    tagService.add(save);
+    if(!save.isEmpty()) {
+      tagService.add(save);
 
-    //저장한 태그 조회
-    List<TagEntity> getTag = tagRepository.findByNameIn(save);
+      //저장한 태그 조회
+      List<TagEntity> getTag = tagRepository.findByNameIn(save);
 
-    //ai_recipe_tag 조회
-    aiRecipeTagRepository.saveAll(getTag.stream()
-        .map(tag -> AiRecipeTagEntity.builder()
-            .aiRecipe(aiRecipe)
-            .tag(tag)
-            .build()).collect(Collectors.toList()));
+      //ai_recipe_tag 저장
+      aiRecipeTagRepository.saveAll(getTag.stream()
+          .map(tag -> AiRecipeTagEntity.builder()
+              .aiRecipe(aiRecipe)
+              .tag(tag)
+              .build()).collect(Collectors.toList()));
+    }
 
     //아까 가져온 삭제할 태그들 삭제
-    aiRecipeTagRepository.deleteRecipeTagIn(id, rmTag);
+    if(!rmTag.isEmpty()) {
+      aiRecipeTagRepository.deleteRecipeTagIn(id, rmTag);
+    }
 
     //제목, 내용 수정
-    aiRecipe.setContent(request.getContent());
-    aiRecipe.setName(request.getName());
+    aiRecipe.updateRecipe(request.getName(),request.getContent());
 
     return AiRecipeUpdateDto.Response.builder()
         .id(aiRecipe.getId())
