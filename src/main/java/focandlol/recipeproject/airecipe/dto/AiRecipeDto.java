@@ -4,6 +4,7 @@ import focandlol.recipeproject.airecipe.entity.AiRecipeEntity;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,19 +28,17 @@ public class AiRecipeDto {
 
   private LocalDateTime updatedAt;
 
-  public static List<AiRecipeDto> from(List<AiRecipeEntity> list) {
-    List<AiRecipeDto> dtos = new ArrayList<>();
-    for (AiRecipeEntity e : list) {
-      dtos.add(AiRecipeDto.builder()
-          .id(e.getId())
-          .name(e.getName())
-          .content(e.getContent())
-          .temperature(e.getTemperature())
-          .createdAt(e.getCreatedAt())
-          .updatedAt(e.getUpdatedAt())
-          .build());
-    }
-    return dtos;
+  public static List<AiRecipeDto> fromEntity(List<AiRecipeEntity> list) {
+    return list.stream()
+        .map(entity -> AiRecipeDto.builder()
+            .id(entity.getId())
+            .name(entity.getName())
+            .content(entity.getContent())
+            .temperature(entity.getTemperature())
+            .createdAt(entity.getCreatedAt())
+            .updatedAt(entity.getUpdatedAt())
+            .build()
+        ).collect(Collectors.toList());
   }
 
 }
