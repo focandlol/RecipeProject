@@ -32,12 +32,16 @@ public class RecipeServiceImpl implements RecipeService {
     UserEntity userEntity = userRepository.findById(user.getId())
         .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
+    //레시피 저장
     RecipeEntity save = recipeRepository.save(request.toEntity(userEntity));
 
+    //해당 레시피에서 사용된 태그 저장
     tagService.add(request.getTags());
 
+    //저장된 태그 조회
     List<TagEntity> tags = tagService.findByNameIn(request.getTags());
 
+    //recipe_tag 저장
     recipeTagService.save(save, tags);
 
     return RecipeCreateDto.Response.fromEntity(save,tags);
