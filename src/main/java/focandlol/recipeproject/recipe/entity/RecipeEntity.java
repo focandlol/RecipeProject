@@ -46,4 +46,11 @@ public class RecipeEntity extends BaseEntity {
   private UserEntity user;
 
   private Long count;
+
+  public void updateRecipe(String title, String name, String content, String bonus){
+    this.title = title;
+    this.name = name;
+    this.content = content;
+    this.bonus = bonus;
+  }
 }

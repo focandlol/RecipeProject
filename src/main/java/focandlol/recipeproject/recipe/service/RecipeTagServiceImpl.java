@@ -25,4 +25,14 @@ public class RecipeTagServiceImpl implements RecipeTagService {
         .collect(Collectors.toList()));
   }
 
+  @Override
+  public void deleteIn(Long id, List<String> tags){
+    recipeTagRepository.deleteRecipeTagIn(id, tags);
+  }
+
+  @Override
+  public List<String> findTagNamesByRecipeId(Long id){
+    return recipeTagRepository.findTagNamesByRecipeId(id);
+  }
+
 }
