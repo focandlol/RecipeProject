@@ -6,6 +6,7 @@ import focandlol.recipeproject.airecipe.dto.AiRecipeDto;
 import focandlol.recipeproject.airecipe.dto.AiRecipeSearchDto;
 import focandlol.recipeproject.airecipe.dto.AiRecipeUpdateDto;
 import focandlol.recipeproject.airecipe.dto.CreateAiRecipeDto;
+import focandlol.recipeproject.airecipe.dto.SeperateAiRecipe;
 import focandlol.recipeproject.airecipe.entity.AiRecipeEntity;
 import focandlol.recipeproject.airecipe.repository.AiRecipeQueryRepository;
 import focandlol.recipeproject.airecipe.repository.AiRecipeRepository;
@@ -55,15 +56,15 @@ public class AiRecipeServiceImpl implements AiRecipeService {
   public void saveRecipe(String recipe, CreateAiRecipeDto createAiRecipeDto,
       CustomOauth2User user) {
 
-    List<String> seper = seperateContent(recipe);
+    SeperateAiRecipe seperated = seperateContent(recipe);
 
     UserEntity userEntity = userRepository.findById(user.getId())
         .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
 
     //ai_recipe 저장
     AiRecipeEntity save = aiRecipeRepository.save(AiRecipeEntity.builder()
-        .name(seper.get(0))
-        .content(seper.get(1))
+        .name(seperated.getName())
+        .content(seperated.getContent())
         .extraDetails(createAiRecipeDto.getExtraDetails())
         .temperature(createAiRecipeDto.getTemperature())
         .user(userEntity).build());
@@ -177,17 +178,12 @@ public class AiRecipeServiceImpl implements AiRecipeService {
   }
 
   //레시피에서 제목, 내용 분리
-  private List<String> seperateContent(String recipe) {
-    List<String> list = new ArrayList<>();
-
+  private SeperateAiRecipe seperateContent(String recipe) {
     String[] parts = recipe.trim().split("\n", 2); // 첫 번째 줄(제목)과 나머지를 분리
-    String title = parts[0].trim(); // 제목
+    String name = parts[0].trim(); // 제목
     String body = parts.length > 1 ? parts[1].trim() : ""; // 본문 (없을 수도 있음)
 
-    list.add(title);
-    list.add(body);
-
-    return list;
+    return new SeperateAiRecipe(name,body);
   }
 
 }

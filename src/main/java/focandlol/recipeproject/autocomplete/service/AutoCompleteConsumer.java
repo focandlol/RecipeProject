@@ -5,6 +5,7 @@ import static focandlol.recipeproject.type.RedisTag.AUTOCOMPLETE_DELETE;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AutoCompleteConsumer {
 
   private final RedisTemplate redisTemplate;
@@ -21,7 +23,7 @@ public class AutoCompleteConsumer {
     for (String tag : tags) {
       String n = tag.trim();
       // 단어의 모든 접두어를 score 0으로 저장
-      for (int l = 0; l <= n.length(); l++) {
+      for (int l = 1; l <= n.length(); l++) {
         String prefix = n.substring(0, l);
         redisTemplate.opsForZSet().incrementScore(AUTOCOMPLETE.toString(), prefix, 0);
 
@@ -46,10 +48,13 @@ public class AutoCompleteConsumer {
       for (int l = 1; l <= n.length(); l++) {
         String prefix = n.substring(0, l);
         //해당 접두어 score -1
-        Long score = redisTemplate.opsForHash().increment(AUTOCOMPLETE_DELETE.toString(), prefix, -1);
-
+        long score = -1;
+        if(redisTemplate.opsForHash().hasKey(AUTOCOMPLETE_DELETE.toString(), prefix)) {
+          score = redisTemplate.opsForHash()
+              .increment(AUTOCOMPLETE_DELETE.toString(), prefix, -1);
+        }
         // 해당 접두어 score가 0이면 다른 곳에서 사용하지 않는 접두어이므로 삭제
-        if(score != null && score == 0){
+        if(score <= 0){
           redisTemplate.opsForHash().delete(AUTOCOMPLETE_DELETE.toString(), prefix);
           redisTemplate.opsForZSet().remove(AUTOCOMPLETE.toString(), prefix);
         }
