@@ -20,23 +20,14 @@ public class AiRecipeDto {
 
   private String name;
 
-  private String content;
-
-  private double temperature;
-
   private LocalDateTime createdAt;
-
-  private LocalDateTime updatedAt;
 
   public static List<AiRecipeDto> fromEntity(List<AiRecipeEntity> list) {
     return list.stream()
         .map(entity -> AiRecipeDto.builder()
             .id(entity.getId())
             .name(entity.getName())
-            .content(entity.getContent())
-            .temperature(entity.getTemperature())
             .createdAt(entity.getCreatedAt())
-            .updatedAt(entity.getUpdatedAt())
             .build()
         ).collect(Collectors.toList());
   }

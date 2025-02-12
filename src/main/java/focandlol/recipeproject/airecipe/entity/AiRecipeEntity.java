@@ -35,7 +35,7 @@ public class AiRecipeEntity extends BaseEntity {
   @Column(nullable = false, length = 20)
   private String name;
 
-  @Lob
+  @Column(columnDefinition = "TEXT")
   private String content;
 
   @Column(nullable = false)

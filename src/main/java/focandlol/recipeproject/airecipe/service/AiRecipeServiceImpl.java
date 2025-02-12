@@ -2,6 +2,7 @@ package focandlol.recipeproject.airecipe.service;
 
 import static focandlol.recipeproject.global.exception.ErrorCode.*;
 
+import focandlol.recipeproject.airecipe.dto.AiRecipeDetailsDto;
 import focandlol.recipeproject.airecipe.dto.AiRecipeDto;
 import focandlol.recipeproject.airecipe.dto.AiRecipeSearchDto;
 import focandlol.recipeproject.airecipe.dto.AiRecipeUpdateDto;
@@ -85,10 +86,9 @@ public class AiRecipeServiceImpl implements AiRecipeService {
   public AiRecipeUpdateDto.Response updateRecipe(@AuthenticationPrincipal CustomOauth2User user
       , Long id, AiRecipeUpdateDto.Request request) {
 
-    AiRecipeEntity aiRecipe = aiRecipeRepository.findById(id)
-        .orElseThrow(() -> new CustomException(AI_RECIPE_NOT_FOUND));
+    AiRecipeEntity aiRecipe = getAiRecipeEntity(id);
 
-    validateUpdateRecipe(user, aiRecipe);
+    validateSameUser(user, aiRecipe);
 
     List<String> list = aiRecipeTagService.findTagNamesByRecipeId(id);
 
@@ -130,34 +130,21 @@ public class AiRecipeServiceImpl implements AiRecipeService {
 
   }
 
+  private AiRecipeEntity getAiRecipeEntity(Long id) {
+    AiRecipeEntity aiRecipe = aiRecipeRepository.findById(id)
+        .orElseThrow(() -> new CustomException(AI_RECIPE_NOT_FOUND));
+    return aiRecipe;
+  }
+
   @Override
   @Transactional
   public void deleteRecipe(@AuthenticationPrincipal CustomOauth2User user, Long id) {
-    validateDeleteRecipe(user, id);
+    AiRecipeEntity aiRecipeEntity = getAiRecipeEntity(id);
+    validateSameUser(user, aiRecipeEntity);
 
     aiRecipeRepository.deleteById(id);
   }
 
-  private void validateDeleteRecipe(CustomOauth2User user, Long id) {
-    UserEntity userEntity = userRepository.findById(user.getId())
-        .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
-
-    AiRecipeEntity aiRecipe = aiRecipeRepository.findById(id)
-        .orElseThrow(() -> new CustomException(AI_RECIPE_NOT_FOUND));
-
-    if (!aiRecipe.getUser().equals(userEntity)) {
-      throw new CustomException(ANOTHER_USER);
-    }
-  }
-
-  private void validateUpdateRecipe(CustomOauth2User user, AiRecipeEntity aiRecipe) {
-    UserEntity userEntity = userRepository.findById(user.getId())
-        .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
-
-    if (!aiRecipe.getUser().equals(userEntity)) {
-      throw new CustomException(ANOTHER_USER);
-    }
-  }
 
   private List<String> findSave(List<String> list, Set<String> tags) {
     return tags.stream()
@@ -173,8 +160,28 @@ public class AiRecipeServiceImpl implements AiRecipeService {
 
   @Override
   @Transactional
-  public List<AiRecipeDto> getRecipe(CustomOauth2User user, AiRecipeSearchDto aiRecipeSearchDto) {
+  public List<AiRecipeDto> getRecipes(CustomOauth2User user, AiRecipeSearchDto aiRecipeSearchDto) {
     return AiRecipeDto.fromEntity(aiRecipeQueryRepository.findAiRecipe(user, aiRecipeSearchDto));
+  }
+
+  @Transactional
+  public AiRecipeDetailsDto getRecipe(CustomOauth2User user, Long id) {
+    AiRecipeEntity aiRecipeEntity = getAiRecipeEntity(id);
+
+    validateSameUser(user, aiRecipeEntity);
+
+    List<String> tags = aiRecipeTagService.findTagNamesByRecipeId(id);
+
+    return AiRecipeDetailsDto.fromEntity(aiRecipeEntity, tags);
+  }
+
+  private void validateSameUser(CustomOauth2User user, AiRecipeEntity aiRecipe) {
+    UserEntity userEntity = userRepository.findById(user.getId())
+        .orElseThrow(() -> new CustomException(USER_NOT_FOUND));
+
+    if (!aiRecipe.getUser().equals(userEntity)) {
+      throw new CustomException(ANOTHER_USER);
+    }
   }
 
   //레시피에서 제목, 내용 분리

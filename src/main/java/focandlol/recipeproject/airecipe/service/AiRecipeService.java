@@ -1,5 +1,6 @@
 package focandlol.recipeproject.airecipe.service;
 
+import focandlol.recipeproject.airecipe.dto.AiRecipeDetailsDto;
 import focandlol.recipeproject.airecipe.dto.AiRecipeDto;
 import focandlol.recipeproject.airecipe.dto.AiRecipeSearchDto;
 import focandlol.recipeproject.airecipe.dto.AiRecipeUpdateDto;
@@ -25,5 +26,7 @@ public interface AiRecipeService {
   void deleteRecipe(@AuthenticationPrincipal CustomOauth2User user, Long id);
 
   @Transactional
-  List<AiRecipeDto> getRecipe(CustomOauth2User user, AiRecipeSearchDto aiRecipeSearchDto);
+  List<AiRecipeDto> getRecipes(CustomOauth2User user, AiRecipeSearchDto aiRecipeSearchDto);
+
+  AiRecipeDetailsDto getRecipe(CustomOauth2User user, Long id);
 }
