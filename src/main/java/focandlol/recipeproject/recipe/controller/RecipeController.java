@@ -2,6 +2,7 @@ package focandlol.recipeproject.recipe.controller;
 
 import focandlol.recipeproject.auth.dto.CustomOauth2User;
 import focandlol.recipeproject.recipe.dto.RecipeCreateDto;
+import focandlol.recipeproject.recipe.dto.RecipeDetailsDto;
 import focandlol.recipeproject.recipe.dto.RecipeDto;
 import focandlol.recipeproject.recipe.dto.RecipeSearchDto;
 import focandlol.recipeproject.recipe.dto.RecipeUpdateDto;
@@ -51,5 +52,10 @@ public class RecipeController {
   @DeleteMapping("/recipe/{id}")
   public void deleteRecipe(@AuthenticationPrincipal CustomOauth2User user, @PathVariable Long id) {
     recipeService.deleteRecipe(user, id);
+  }
+
+  @GetMapping("/recipe/{id}")
+  public RecipeDetailsDto getRecipe(@PathVariable Long id){
+    return recipeService.getRecipe(id);
   }
 }

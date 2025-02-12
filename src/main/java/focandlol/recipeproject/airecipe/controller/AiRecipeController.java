@@ -1,5 +1,6 @@
 package focandlol.recipeproject.airecipe.controller;
 
+import focandlol.recipeproject.airecipe.dto.AiRecipeDetailsDto;
 import focandlol.recipeproject.airecipe.dto.AiRecipeDto;
 import focandlol.recipeproject.airecipe.dto.AiRecipeSearchDto;
 import focandlol.recipeproject.airecipe.dto.AiRecipeUpdateDto;
@@ -30,15 +31,15 @@ public class AiRecipeController {
   public String createRecipe(@AuthenticationPrincipal CustomOauth2User user,
       @RequestBody CreateAiRecipeDto createAiRecipeDto) {
     String recipe = aiRecipeService.generateRecipe(createAiRecipeDto, user);
-    aiRecipeService.saveRecipe(recipe, createAiRecipeDto,user);
+    aiRecipeService.saveRecipe(recipe, createAiRecipeDto, user);
 
     return recipe;
   }
 
   @GetMapping("/airecipe")
-  public List<AiRecipeDto> getRecipe(@AuthenticationPrincipal CustomOauth2User user,
+  public List<AiRecipeDto> getRecipes(@AuthenticationPrincipal CustomOauth2User user,
       @RequestBody AiRecipeSearchDto aiRecipeSearchDto) {
-    return aiRecipeService.getRecipe(user, aiRecipeSearchDto);
+    return aiRecipeService.getRecipes(user, aiRecipeSearchDto);
   }
 
   @PutMapping("/airecipe/{id}")
@@ -52,5 +53,12 @@ public class AiRecipeController {
   public void deleteRecipe(@AuthenticationPrincipal CustomOauth2User user
       , @PathVariable Long id) {
     aiRecipeService.deleteRecipe(user, id);
+  }
+
+  @GetMapping("/airecipe/{id}")
+  public AiRecipeDetailsDto getRecipe(@AuthenticationPrincipal CustomOauth2User user
+      , @PathVariable Long id
+  ){
+    return aiRecipeService.getRecipe(user, id);
   }
 }

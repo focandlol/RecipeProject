@@ -4,6 +4,7 @@ import static focandlol.recipeproject.global.exception.ErrorCode.*;
 import focandlol.recipeproject.auth.dto.CustomOauth2User;
 import focandlol.recipeproject.global.exception.CustomException;
 import focandlol.recipeproject.recipe.dto.RecipeCreateDto;
+import focandlol.recipeproject.recipe.dto.RecipeDetailsDto;
 import focandlol.recipeproject.recipe.dto.RecipeDto;
 import focandlol.recipeproject.recipe.dto.RecipeSearchDto;
 import focandlol.recipeproject.recipe.dto.RecipeUpdateDto;
@@ -124,6 +125,15 @@ public class RecipeServiceImpl implements RecipeService {
     validateDeleteRecipe(user, id);
 
     recipeRepository.deleteById(id);
+  }
+
+  public RecipeDetailsDto getRecipe(Long id){
+    RecipeEntity recipeEntity = recipeRepository.findByIdFetch(id)
+        .orElseThrow(() -> new CustomException(RECIPE_NOT_FOUND));
+
+    List<String> tags = recipeTagService.findTagNamesByRecipeId(id);
+
+    return RecipeDetailsDto.fromEntity(recipeEntity, tags);
   }
 
   private void validateDeleteRecipe(CustomOauth2User user, Long id) {

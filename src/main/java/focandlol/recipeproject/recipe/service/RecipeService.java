@@ -2,6 +2,7 @@ package focandlol.recipeproject.recipe.service;
 
 import focandlol.recipeproject.auth.dto.CustomOauth2User;
 import focandlol.recipeproject.recipe.dto.RecipeCreateDto;
+import focandlol.recipeproject.recipe.dto.RecipeDetailsDto;
 import focandlol.recipeproject.recipe.dto.RecipeDto;
 import focandlol.recipeproject.recipe.dto.RecipeSearchDto;
 import focandlol.recipeproject.recipe.dto.RecipeUpdateDto;
@@ -20,4 +21,6 @@ public interface RecipeService {
       Long id);
 
   void deleteRecipe(CustomOauth2User user, Long id);
+
+  RecipeDetailsDto getRecipe(Long id);
 }
