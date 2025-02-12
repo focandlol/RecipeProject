@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
@@ -61,7 +62,11 @@ public class RecipeServiceImpl implements RecipeService {
 
   @Override
   public Page<RecipeDto> getRecipes(RecipeSearchDto request, Pageable pageable) {
-    return RecipeDto.fromEntity(queryRecipeRepository.findRecipes(request, pageable));
+    Page<RecipeEntity> recipes = queryRecipeRepository.findRecipes(request, pageable);
+
+    List<RecipeDto> recipeDtos = RecipeDto.fromEntity(recipes);
+
+    return new PageImpl<>(recipeDtos, pageable, recipes.getTotalElements());
   }
 
   @Override

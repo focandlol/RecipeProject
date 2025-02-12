@@ -8,6 +8,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
@@ -22,7 +23,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "recipe")
+@Table(name = "recipe",
+    indexes = {
+        @Index(name = "idx_recipe_count", columnList = "count DESC"), //좋아요 순
+        @Index(name = "idx_recipe_id", columnList = "recipe_id DESC") // 최신 순
+    })
 public class RecipeEntity extends BaseEntity {
 
   @Id
@@ -36,7 +41,7 @@ public class RecipeEntity extends BaseEntity {
   @Column(nullable = false, length = 20)
   private String name;
 
-  @Lob
+  @Column(columnDefinition = "TEXT")
   private String content;
 
   private String bonus;
@@ -47,7 +52,7 @@ public class RecipeEntity extends BaseEntity {
 
   private Long count;
 
-  public void updateRecipe(String title, String name, String content, String bonus){
+  public void updateRecipe(String title, String name, String content, String bonus) {
     this.title = title;
     this.name = name;
     this.content = content;
