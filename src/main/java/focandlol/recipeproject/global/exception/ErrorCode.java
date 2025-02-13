@@ -45,7 +45,9 @@ public enum ErrorCode {
   ALREADY_LIKE("이미 좋아요를 눌렀습니다.",BAD_REQUEST),
   NOT_ALREADY_LIKE("좋아요를 누른 레시피가 아닙니다.",BAD_REQUEST),
 
-  ANOTHER_USER("작성자가 다릅니다.",BAD_REQUEST);
+  ANOTHER_USER("작성자가 다릅니다.",BAD_REQUEST),
+
+  COMMENT_NOT_FOUND("해당 코멘트가 없습니다", BAD_REQUEST);
 
   private final String description;
   private final HttpStatus status;
