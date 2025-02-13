@@ -26,6 +26,7 @@ public enum ErrorCode {
    * 시스템 에러
    */
   INTERNAL_SERVER_ERROR("서버 오류입니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+  METHOD_ARGUMENT_NOT_VALID("잘못된 입력 데이터입니다", BAD_REQUEST),
 
   INVALID_TAG("존재하지 않는 태그입니다.",BAD_REQUEST),
   EXIST_TAG("이미 존재하는 태그입니다",BAD_REQUEST),
@@ -45,7 +46,9 @@ public enum ErrorCode {
   ALREADY_LIKE("이미 좋아요를 눌렀습니다.",BAD_REQUEST),
   NOT_ALREADY_LIKE("좋아요를 누른 레시피가 아닙니다.",BAD_REQUEST),
 
-  ANOTHER_USER("작성자가 다릅니다.",BAD_REQUEST);
+  ANOTHER_USER("작성자가 다릅니다.",BAD_REQUEST),
+
+  COMMENT_NOT_FOUND("해당 코멘트가 없습니다", BAD_REQUEST);
 
   private final String description;
   private final HttpStatus status;
