@@ -29,7 +29,10 @@ public class AiRecipeController {
   @PostMapping("/airecipe")
   public String createRecipe(@AuthenticationPrincipal CustomOauth2User user,
       @RequestBody CreateAiRecipeDto createAiRecipeDto) {
-    return aiRecipeService.generateRecipe(createAiRecipeDto, user);
+    String recipe = aiRecipeService.generateRecipe(createAiRecipeDto, user);
+    aiRecipeService.saveRecipe(recipe, createAiRecipeDto,user);
+
+    return recipe;
   }
 
   @GetMapping("/airecipe")

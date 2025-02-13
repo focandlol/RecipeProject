@@ -30,6 +30,7 @@ public class RedisConfig {
   public RedissonClient redissonClient() {
     Config config = new Config();
     config.useSingleServer().setAddress("redis://localhost:6379");
+//    config.useSingleServer().setAddress("redis://recipe-redis:6379");
     return Redisson.create(config);
   }
 }

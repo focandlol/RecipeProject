@@ -1,19 +1,11 @@
 package focandlol.recipeproject.airecipe.service;
 
-import static focandlol.recipeproject.global.exception.ErrorCode.*;
-
 import focandlol.recipeproject.airecipe.dto.CreateAiRecipeDto;
 import focandlol.recipeproject.airecipe.dto.api.ApiRequestDto;
 import focandlol.recipeproject.airecipe.dto.api.ApiResponseDto;
 import focandlol.recipeproject.airecipe.dto.api.Message;
-import focandlol.recipeproject.airecipe.entity.AiRecipeEntity;
-import focandlol.recipeproject.airecipe.entity.AiRecipeTagEntity;
 import focandlol.recipeproject.airecipe.repository.AiRecipeRepository;
-import focandlol.recipeproject.airecipe.repository.AiRecipeTagRepository;
 import focandlol.recipeproject.auth.dto.CustomOauth2User;
-import focandlol.recipeproject.global.exception.CustomException;
-import focandlol.recipeproject.global.exception.ErrorCode;
-import focandlol.recipeproject.user.entity.UserEntity;
 import focandlol.recipeproject.user.repository.UserRepository;
 import java.util.Collections;
 import org.springframework.beans.factory.annotation.Value;
