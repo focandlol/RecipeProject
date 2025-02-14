@@ -3,6 +3,8 @@ package focandlol.recipeproject.comment.repository;
 import focandlol.recipeproject.comment.entity.CommentEntity;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,8 +15,9 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
       + " left join fetch c.parent p where c.id = :commentId")
   Optional<CommentEntity> findByCommentIdFetch(@Param("commentId") Long commentId);
 
-  @Query("select c from CommentEntity c join fetch c.user u where c.parent is null and c.recipe.id = :recipeId")
-  List<CommentEntity> findParentComment(@Param("recipeId") Long recipeId);
+  @Query("select c from CommentEntity c join fetch c.user u where c.parent is null "
+      + "and c.recipe.id = :recipeId order by c.id")
+  Page<CommentEntity> findParentComment(@Param("recipeId") Long recipeId, Pageable pageable);
 
   @Query("select c from CommentEntity c " +
       "join fetch c.user " +

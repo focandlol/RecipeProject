@@ -19,4 +19,6 @@ public class ReplyCommentDto {
 
   private Long parentId;
 
+  private Long rere;
+
 }

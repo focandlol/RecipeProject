@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,6 +71,13 @@ public class CommentServiceImpl implements CommentService {
     return ReplyCommentCreateDto.Response.fromEntity(commentRepository.save(CommentEntity.builder()
         .parent(commentEntity.getParent() == null ? commentEntity : commentEntity.getParent())
         .recipe(commentEntity.getRecipe())
+        /**
+         * rere : 대댓글과 대대댓글 분류용
+         * 대댓글 이하는 모두 2층으로 표현
+         * 따라서 대댓글인지 대대댓글인지 분류 어려움
+         * 대대댓글 부터는 rere에 바로 위 부모댓글 id를 넣어서 분류
+         */
+        .rere(commentEntity.getParent() == null ? null : commentEntity)
         .user(userEntity)
         .content(request.getContent())
         .build()));
@@ -77,13 +87,14 @@ public class CommentServiceImpl implements CommentService {
    * 해당 게시글 댓글 조회
    */
   @Override
-  public List<CommentDto> getComments(Long id) {
-    List<CommentEntity> parentComments = commentRepository.findParentComment(id);
+  public Page<CommentDto> getComments(Long id, Pageable pageable) {
+    Page<CommentEntity> parentCommentsPage = commentRepository.findParentComment(id, pageable);
+    List<CommentEntity> parentComments = parentCommentsPage.getContent();
 
     // 부모 댓글 id 리스트 생성
     List<Long> parentIds = parentComments.stream()
         .map(comment -> comment.getId())
-        .collect(Collectors.toList()); // Java 16+ (toList()는 불변 리스트 반환)
+        .toList();
 
     // 부모 댓글을 dto로 변환하여 map에 저장
     Map<Long, CommentDto> commentMap = parentComments.stream()
@@ -106,7 +117,7 @@ public class CommentServiceImpl implements CommentService {
       }
     }
 
-    return new ArrayList<>(commentMap.values());
+    return new PageImpl<>(new ArrayList<>(commentMap.values()), pageable, parentCommentsPage.getTotalElements());
   }
 
   @Override
@@ -147,6 +158,7 @@ public class CommentServiceImpl implements CommentService {
         .id(reply.getId())
         .userId(reply.getUser().getId())
         .content(reply.getContent())
+        .rere(reply.getRere() == null ? null : reply.getRere().getUser().getId()) //reply.getRere() != null 대대댓글 이하란 뜻
         .parentId(reply.getParent().getId())
         .build();
   }

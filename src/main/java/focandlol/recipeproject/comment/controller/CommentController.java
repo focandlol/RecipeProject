@@ -9,6 +9,8 @@ import focandlol.recipeproject.comment.service.CommentService;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,8 +43,8 @@ public class CommentController {
   }
 
   @GetMapping("/comment/{id}")
-  public List<CommentDto> getComments(@PathVariable Long id) {
-    return commentService.getComments(id);
+  public Page<CommentDto> getComments(@PathVariable Long id, Pageable pageable) {
+    return commentService.getComments(id, pageable);
   }
 
   @PutMapping("/comment/{id}")

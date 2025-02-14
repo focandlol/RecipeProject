@@ -6,6 +6,8 @@ import focandlol.recipeproject.comment.dto.CommentDto;
 import focandlol.recipeproject.comment.dto.CommentUpdateDto;
 import focandlol.recipeproject.comment.dto.ReplyCommentCreateDto;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface CommentService {
 
@@ -15,7 +17,7 @@ public interface CommentService {
   ReplyCommentCreateDto.Response addReplyComment(CustomOauth2User user, Long parentId,
       ReplyCommentCreateDto.Request request);
 
-  List<CommentDto> getComments(Long id);
+  Page<CommentDto> getComments(Long id, Pageable pageable);
 
   CommentUpdateDto.Response updateComment(CustomOauth2User user, Long id,
       CommentUpdateDto.Request request);

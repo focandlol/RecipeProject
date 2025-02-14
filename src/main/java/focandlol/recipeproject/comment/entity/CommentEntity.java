@@ -46,6 +46,11 @@ public class CommentEntity extends BaseEntity {
   @OnDelete(action = OnDeleteAction.CASCADE)
   private RecipeEntity recipe;
 
+  /**
+   * 원댓글
+   * 만약 1층(원댓글) 이면 부모가 없으므로 null
+   * 2층(대댓글 이하)는 해당 댓글의 원댓글 들어감
+   */
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "parent_id", nullable = true)
   @OnDelete(action = OnDeleteAction.CASCADE)
@@ -53,6 +58,18 @@ public class CommentEntity extends BaseEntity {
 
   @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<CommentEntity> children = new ArrayList<>();
+
+  /**
+   * 댓글, 대댓글과 대대댓글 분류용
+   * 원댓글은 1층, 그 이하는 모두 2층으로 분류
+   * 따라서 대댓글과 대대댓글 분류 어려움
+   * rere는 대대댓글부터 바로 위 부모 댓글 저장
+   * rere 유무로 대댓글과 대대댓글 구분 가능
+   */
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "re_id", nullable = true)
+  @OnDelete(action = OnDeleteAction.CASCADE)
+  private CommentEntity rere;
 
   public void updateComment(String content){
     this.content = content;
