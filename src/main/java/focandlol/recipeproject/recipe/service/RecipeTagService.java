@@ -7,4 +7,8 @@ import java.util.List;
 public interface RecipeTagService {
 
   void save(RecipeEntity recipe, List<TagEntity> tags);
+
+  List<String> findTagNamesByRecipeId(Long id);
+
+  void deleteIn(Long id, List<String> tags);
 }
