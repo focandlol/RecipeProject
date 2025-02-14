@@ -23,4 +23,8 @@ public interface RecipeService {
   void deleteRecipe(CustomOauth2User user, Long id);
 
   RecipeDetailsDto getRecipe(Long id);
+
+  Page<RecipeDto> getOwnRecipes(CustomOauth2User user, Pageable pageable);
+
+  Page<RecipeDto> getLikesRecipes(CustomOauth2User user, Pageable pageable);
 }

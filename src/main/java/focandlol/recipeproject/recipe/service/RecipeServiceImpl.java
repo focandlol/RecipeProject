@@ -65,9 +65,15 @@ public class RecipeServiceImpl implements RecipeService {
   public Page<RecipeDto> getRecipes(RecipeSearchDto request, Pageable pageable) {
     Page<RecipeEntity> recipes = queryRecipeRepository.findRecipes(request, pageable);
 
-    List<RecipeDto> recipeDtos = RecipeDto.fromEntity(recipes);
-
-    return new PageImpl<>(recipeDtos, pageable, recipes.getTotalElements());
+    return recipes.map(entity ->
+        RecipeDto.builder()
+            .id(entity.getId())
+            .title(entity.getTitle())
+            .name(entity.getName())
+            .count(entity.getCount())
+            .created(entity.getCreatedAt())
+            .build()
+    );
   }
 
   @Override
@@ -127,6 +133,7 @@ public class RecipeServiceImpl implements RecipeService {
     recipeRepository.deleteById(id);
   }
 
+  @Override
   public RecipeDetailsDto getRecipe(Long id){
     RecipeEntity recipeEntity = recipeRepository.findByIdFetch(id)
         .orElseThrow(() -> new CustomException(RECIPE_NOT_FOUND));
@@ -134,6 +141,37 @@ public class RecipeServiceImpl implements RecipeService {
     List<String> tags = recipeTagService.findTagNamesByRecipeId(id);
 
     return RecipeDetailsDto.fromEntity(recipeEntity, tags);
+  }
+
+  @Override
+  public Page<RecipeDto> getOwnRecipes(CustomOauth2User user, Pageable pageable) {
+    Page<RecipeEntity> pages = recipeRepository.findByUserId(user.getId(), pageable);
+
+    return pages.map(entity ->
+        RecipeDto.builder()
+            .id(entity.getId())
+            .title(entity.getTitle())
+            .name(entity.getName())
+            .count(entity.getCount())
+            .created(entity.getCreatedAt())
+            .build()
+    );
+  }
+
+  @Override
+  public Page<RecipeDto> getLikesRecipes(CustomOauth2User user, Pageable pageable) {
+    Page<RecipeEntity> pages = recipeRepository.findLikeRecipeByUserId(user.getId(),
+        pageable);
+
+    return pages.map(entity ->
+        RecipeDto.builder()
+            .id(entity.getId())
+            .title(entity.getTitle())
+            .name(entity.getName())
+            .count(entity.getCount())
+            .created(entity.getCreatedAt())
+            .build()
+    );
   }
 
   private void validateDeleteRecipe(CustomOauth2User user, Long id) {

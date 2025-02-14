@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,7 +56,19 @@ public class RecipeController {
   }
 
   @GetMapping("/recipe/{id}")
-  public RecipeDetailsDto getRecipe(@PathVariable Long id){
+  public RecipeDetailsDto getRecipe(@PathVariable Long id) {
     return recipeService.getRecipe(id);
+  }
+
+  @GetMapping("/recipe/own")
+  public Page<RecipeDto> getOwnRecipes(@AuthenticationPrincipal CustomOauth2User user,
+      Pageable pageable) {
+    return recipeService.getOwnRecipes(user, pageable);
+  }
+
+  @GetMapping("/recipe/likes")
+  public Page<RecipeDto> getLikesRecipes(@AuthenticationPrincipal CustomOauth2User user,
+      Pageable pageable) {
+    return recipeService.getLikesRecipes(user, pageable);
   }
 }
