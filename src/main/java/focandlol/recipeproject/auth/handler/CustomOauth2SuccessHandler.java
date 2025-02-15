@@ -35,12 +35,8 @@ public class CustomOauth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
     String token = createToken(customUserDetails);
 
     /**
-     * jwt json 형식으로 반환
+     * "/" 로 jwt 쿠키에 담아서 리다이렉트
      */
-//    response.setContentType("application/json");
-//    response.setCharacterEncoding("UTF-8");
-//    response.getWriter().write("{\"token\": \"" + token + "\"}");
-
     Cookie jwtCookie = new Cookie("Authorization", token);
     jwtCookie.setHttpOnly(true);
     jwtCookie.setPath("/");

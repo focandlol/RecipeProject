@@ -2,6 +2,7 @@ package focandlol.recipeproject.airecipe.repository;
 
 import static focandlol.recipeproject.airecipe.entity.QAiRecipeEntity.*;
 import static focandlol.recipeproject.airecipe.entity.QAiRecipeTagEntity.*;
+import static focandlol.recipeproject.recipe.entity.QRecipeEntity.recipeEntity;
 import static focandlol.recipeproject.tag.entity.QTagEntity.*;
 
 import com.querydsl.core.types.OrderSpecifier;
@@ -23,7 +24,7 @@ public class AiRecipeQueryRepository {
     this.query = new JPAQueryFactory(em);
   }
 
-  public List<AiRecipeEntity> findAiRecipe(CustomOauth2User user, AiRecipeSearchDto aiRecipeSearchDto){
+  public List<AiRecipeEntity> findAiRecipe(CustomOauth2User user, AiRecipeSearchDto aiRecipeSearchDto, List<String> tags){
     return query
         .select(aiRecipeEntity)
         .from(aiRecipeEntity)
@@ -31,11 +32,13 @@ public class AiRecipeQueryRepository {
         .leftJoin(aiRecipeTagEntity.tag, tagEntity)
         .where(
             eqUser(user.getId()),
-            containTag(aiRecipeSearchDto.getTags()),
+            //containTag(aiRecipeSearchDto.getTags()),
+            containTag(tags),
             containKeyword(aiRecipeSearchDto.getKeyword())
         )
         .groupBy(aiRecipeEntity.id)
-        .having(havingCheck(aiRecipeSearchDto.getTags()))
+        //.having(havingCheck(aiRecipeSearchDto.getTags()))
+        .having(havingCheck(tags))
         .orderBy(order(aiRecipeSearchDto.isUpper()))
         .fetch();
   }
@@ -44,7 +47,7 @@ public class AiRecipeQueryRepository {
     if(tags == null || tags.isEmpty()){
       return null;
     }
-    return aiRecipeTagEntity.count().gt((long) tags.size());
+    return aiRecipeTagEntity.count().goe((long) tags.size());
   }
 
   private BooleanExpression eqUser(Long userId){
@@ -57,8 +60,12 @@ public class AiRecipeQueryRepository {
   }
 
   private BooleanExpression containKeyword(String keyword){
-    if(keyword == null || keyword.isEmpty()) return null;
-    return aiRecipeEntity.name.containsIgnoreCase(keyword);
+    if (keyword == null || keyword.isEmpty()) {
+      return null;
+    }
+
+    return aiRecipeEntity.name.likeIgnoreCase("%" + keyword + "%")
+        .or(aiRecipeEntity.content.likeIgnoreCase("%" + keyword + "%"));
   }
 
   private OrderSpecifier<?> order(boolean upper) {

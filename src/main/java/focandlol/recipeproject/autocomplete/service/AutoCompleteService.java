@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AutoCompleteService {
-  private final RedisTemplate redisTemplate;
+  private final RedisTemplate<String, String> redisTemplate;
 
   public Map<String,Double> getAuto(String name){
     List<String> list = getList(name);
@@ -27,47 +27,6 @@ public class AutoCompleteService {
   /**
    * addAuto, delAuto kafka 처리 -> AutoCompleteConsumer
    */
-//  /**
-//   * 태그 자동완성용 캐시
-//   * @param tags : 오리고기
-//   *             오
-//   *             오리
-//   *             오리고
-//   *             오리고기
-//   *             오리고기# (원래 단어)
-//   *             이런식으로 저장
-//   */
-//  public void addAuto(List<String> tags) {
-//    for (String tag : tags) {
-//      String n = tag.trim();
-//      // 단어의 모든 접두어를 score 0으로 저장
-//      for (int l = 0; l <= n.length(); l++) {
-//        String prefix = n.substring(0, l);
-//        redisTemplate.opsForZSet().incrementScore(AUTOCOMPLETE.toString(), prefix, 0);
-//        redisTemplate.opsForHash().increment("del", prefix, 1);
-//      }
-//      // 원래 단어 저장
-//      String perfect = n + "#";
-//      redisTemplate.opsForZSet().incrementScore(AUTOCOMPLETE.toString(), perfect, 0);
-//    }
-//  }
-//
-//  public void delAuto(List<String> tags){
-//    Object[] array = tags.stream().map(a -> a + "#").toArray();
-//    redisTemplate.opsForZSet().remove(AUTOCOMPLETE.toString(), array);
-//    for (String tag : tags) {
-//      for (int l = 0; l <= tag.length(); l++) {
-//        String prefix = tag.substring(0, l);
-//
-//        Long score = redisTemplate.opsForHash().increment("del", prefix, -1);
-//
-//        if(score != null && score == 0){
-//          redisTemplate.opsForHash().delete("del", prefix);
-//          redisTemplate.opsForZSet().remove(AUTOCOMPLETE.toString(), prefix);
-//        }
-//      }
-//    }
-//  }
 
   /**
    * @param name : 오
@@ -78,8 +37,12 @@ public class AutoCompleteService {
   private List<String> getList(String name){
     Long auto = redisTemplate.opsForZSet().rank(AUTOCOMPLETE.toString(), name);
 
+    if(auto == null){
+      return Collections.emptyList();
+    }
+
     Set<String> set = redisTemplate.opsForZSet().range(AUTOCOMPLETE.toString(), auto, auto + 500);
-    if (auto == null || set.isEmpty()) return Collections.emptyList();
+    if (set.isEmpty()) return Collections.emptyList();
 
     return set.stream()
         .takeWhile(entry -> entry.startsWith(name))

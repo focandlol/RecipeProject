@@ -11,7 +11,6 @@ import focandlol.recipeproject.user.entity.UserEntity;
 import focandlol.recipeproject.user.repository.UserRepository;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;

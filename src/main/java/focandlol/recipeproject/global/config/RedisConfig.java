@@ -3,6 +3,7 @@ package focandlol.recipeproject.global.config;
 import java.time.Duration;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
+import org.redisson.client.codec.StringCodec;
 import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
@@ -46,9 +47,10 @@ public class RedisConfig {
     RedisTemplate<String, Object> template = new RedisTemplate<>();
     template.setConnectionFactory(redisConnectionFactory);
     template.setKeySerializer(new StringRedisSerializer());
-    template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+    template.setValueSerializer(new StringRedisSerializer());
     template.setHashKeySerializer(new StringRedisSerializer());
-    template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+    template.setHashValueSerializer(new StringRedisSerializer());
+    template.setDefaultSerializer(new StringRedisSerializer());
     return template;
   }
 

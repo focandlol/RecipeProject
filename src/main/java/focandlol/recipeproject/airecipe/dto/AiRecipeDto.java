@@ -2,7 +2,6 @@ package focandlol.recipeproject.airecipe.dto;
 
 import focandlol.recipeproject.airecipe.entity.AiRecipeEntity;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;

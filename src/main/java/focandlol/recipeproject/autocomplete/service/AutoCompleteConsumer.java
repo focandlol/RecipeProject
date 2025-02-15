@@ -16,8 +16,18 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AutoCompleteConsumer {
 
-  private final RedisTemplate redisTemplate;
+  private final RedisTemplate<String, String> redisTemplate;
 
+  /**
+   //   * 태그 자동완성용 캐시
+   //   * @param tags : 오리고기
+   //   *             오
+   //   *             오리
+   //   *             오리고
+   //   *             오리고기
+   //   *             오리고기# (원래 단어)
+   //   *             이런식으로 저장
+   //   */
   @KafkaListener(topics = "auto-complete-topic", groupId = "autocomplete-group")
   public void addTag(List<String> tags, Acknowledgment ack) {
     for (String tag : tags) {

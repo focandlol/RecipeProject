@@ -1,8 +1,6 @@
 package focandlol.recipeproject.airecipe.dto;
 
 import focandlol.recipeproject.airecipe.entity.AiRecipeEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.NamedStoredProcedureQueries;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;

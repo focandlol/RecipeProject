@@ -48,6 +48,8 @@ public enum ErrorCode {
 
   ANOTHER_USER("작성자가 다릅니다.",BAD_REQUEST),
 
+  EMPTY_API_RESPONSE("openai api 응답이 비어있습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+
   COMMENT_NOT_FOUND("해당 코멘트가 없습니다", BAD_REQUEST);
 
   private final String description;

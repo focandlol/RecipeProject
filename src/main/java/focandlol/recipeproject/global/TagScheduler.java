@@ -1,5 +1,7 @@
 package focandlol.recipeproject.global;
 
+import static focandlol.recipeproject.type.RedisTag.TAG_UPDATE;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,7 +26,7 @@ public class TagScheduler {
    */
   @Scheduled(fixedRate = 20000)
   public void syncTagRanking() {
-    Boolean exists = redisTemplate.hasKey("tag_update");
+    Boolean exists = redisTemplate.hasKey(TAG_UPDATE.toString());
 
     if (exists) {
       // tag_update 조회 및 삭제
@@ -81,9 +83,9 @@ public class TagScheduler {
           public List<Object> execute(RedisOperations operations) throws DataAccessException {
             operations.multi();
             // 사용 횟수 변경된 태그 조회
-            operations.opsForHash().entries("tag_update");
+            operations.opsForHash().entries(TAG_UPDATE.toString());
             // tag_update 삭제
-            operations.delete("tag_update");
+            operations.delete(TAG_UPDATE.toString());
             // 트랜잭션 실행
             return operations.exec();
           }

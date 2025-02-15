@@ -2,6 +2,7 @@ package focandlol.recipeproject.tag.service;
 
 import static focandlol.recipeproject.global.exception.ErrorCode.*;
 import static focandlol.recipeproject.type.RedisTag.TAG_RANKING;
+import static focandlol.recipeproject.type.RedisTag.TAG_UPDATE;
 
 import focandlol.recipeproject.autocomplete.service.AutoCompleteService;
 import focandlol.recipeproject.global.exception.CustomException;
@@ -9,7 +10,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 public class TagRedisServiceImpl implements TagRedisService {
 
   private final RedisTemplate redisTemplate;
-  private final AutoCompleteService autoCompleteService;
   private final KafkaTemplate<String, List<String>> kafkaTemplate;
 
   @Override
@@ -44,7 +43,7 @@ public class TagRedisServiceImpl implements TagRedisService {
     Double score = redisTemplate.opsForZSet().score(TAG_RANKING.toString(), tag);
 
     //태그 사용 횟수 업데이트 hash의 score 조회
-    Double updateScore = Optional.ofNullable(redisTemplate.opsForHash().get("tag_update", tag))
+    Double updateScore = Optional.ofNullable(redisTemplate.opsForHash().get(TAG_UPDATE.toString(), tag))
         .map(Object::toString)
         .map(Double::parseDouble)
         .orElse(0.0);
@@ -73,8 +72,7 @@ public class TagRedisServiceImpl implements TagRedisService {
   @Override
   public void deleteTagInRedis(List<String> tags) {
     redisTemplate.opsForZSet().remove(TAG_RANKING.toString(), tags.toArray());
-    redisTemplate.opsForHash().delete("tag_update", tags.toArray());
-    //autoCompleteService.delAuto(tags);
+    redisTemplate.opsForHash().delete(TAG_UPDATE.toString(), tags.toArray());
     kafkaTemplate.send("auto-complete-delete-topic",tags);
   }
 
@@ -100,7 +98,7 @@ public class TagRedisServiceImpl implements TagRedisService {
   private void saveTagRanking(List<String> tags, double score, double updateScore) {
     for (String tag : tags) {
       redisTemplate.opsForZSet().incrementScore(TAG_RANKING.toString(), tag, score);
-      redisTemplate.opsForHash().increment("tag_update", tag, updateScore);
+      redisTemplate.opsForHash().increment(TAG_UPDATE.toString(), tag, updateScore);
     }
   }
 }

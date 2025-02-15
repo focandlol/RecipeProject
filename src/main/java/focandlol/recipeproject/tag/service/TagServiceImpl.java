@@ -1,24 +1,17 @@
 package focandlol.recipeproject.tag.service;
 
 import static focandlol.recipeproject.global.exception.ErrorCode.*;
-import static focandlol.recipeproject.type.RedisTag.AUTOCOMPLETE;
 import static focandlol.recipeproject.type.RedisTag.TAG_RANKING;
 
 import focandlol.recipeproject.global.exception.CustomException;
-import focandlol.recipeproject.global.exception.ErrorCode;
 import focandlol.recipeproject.tag.dto.TagDto;
 import focandlol.recipeproject.tag.entity.TagEntity;
 import focandlol.recipeproject.tag.repository.TagRepository;
-import focandlol.recipeproject.type.RedisTag;
-import jakarta.persistence.EntityManager;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -61,28 +54,24 @@ public class TagServiceImpl implements TagService {
     LocalDateTime now = LocalDateTime.now();
     List<RLock> locks = new ArrayList<>();
 
-    long start = System.currentTimeMillis();
-
     try {
       for (String name : tags) {
         String lockKey = "lock:" + name;
         RLock lock = redissonClient.getLock(lockKey);
-        //int count = 0;
 
         while (true) {
           if (lock.isLocked()) {
-           // count++;
           } else {
             /**
-             * count가 0이면 락을 얻기 위해 처음 시도하는 것
-             * 처음 시도 시 redis에 해당 태그 있는지 확인
-             * 없으면 락 얻기 시도
+             * 락 걸려있는지 확인
+             * 안 걸려 있다면
+             * redis에 해당 태그 있는지 확인
              *
-             * count가 0이 아니면 해당 태그에 대한 락을 누군가 이미 얻은 적 있다는 것
-             * 누군가 이미 얻은적 있는데 락이 안 걸려 있다 -> 이미 해당 태그가 redis, db에 저장되었다
-             * 따라서 break하고 다음 태그로
+             * redis에 해당 태그 있다면 db에도 있다는 소리
+             * break 후 다음 태그로
+             * 없다면 락 얻기 시도 -> 얻으면 해당 트그 batchArgs에 추가
+             * 락 얻기 실패 시 반복
              */
-            //if (count == 0) {
               Double has = redisTemplate.opsForZSet().score(TAG_RANKING.toString(), name);
               if (has != null) {
                 break;
@@ -93,12 +82,7 @@ public class TagServiceImpl implements TagService {
                 locks.add(lock); // 해제할 락 목록에 추가
                 batchArgs.add(new Object[]{name, 0, now, now});
                 break;
-              } else {
-                //count++;
               }
-//            } else {
-//              break;
-//            }
           }
         }
       }
@@ -116,8 +100,6 @@ public class TagServiceImpl implements TagService {
         }
       }
     }
-
-    long end = System.currentTimeMillis();
 
     ArrayList<String> get = new ArrayList<>(tags);
 
@@ -159,7 +141,6 @@ public class TagServiceImpl implements TagService {
       DataSourceUtils.releaseConnection(connection, dataSource);
     }
   }
-
 
   @Transactional
   @Override

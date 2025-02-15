@@ -1,7 +1,6 @@
 package focandlol.recipeproject.airecipe.entity;
 
 import focandlol.recipeproject.tag.entity.TagEntity;
-import focandlol.recipeproject.user.entity.UserEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

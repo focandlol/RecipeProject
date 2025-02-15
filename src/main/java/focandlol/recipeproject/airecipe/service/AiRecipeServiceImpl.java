@@ -57,6 +57,7 @@ public class AiRecipeServiceImpl implements AiRecipeService {
   public void saveRecipe(String recipe, CreateAiRecipeDto createAiRecipeDto,
       CustomOauth2User user) {
 
+    //제목, 내용 분리
     SeperateAiRecipe seperated = seperateContent(recipe);
 
     UserEntity userEntity = userRepository.findById(user.getId())
@@ -160,8 +161,8 @@ public class AiRecipeServiceImpl implements AiRecipeService {
 
   @Override
   @Transactional
-  public List<AiRecipeDto> getRecipes(CustomOauth2User user, AiRecipeSearchDto aiRecipeSearchDto) {
-    return AiRecipeDto.fromEntity(aiRecipeQueryRepository.findAiRecipe(user, aiRecipeSearchDto));
+  public List<AiRecipeDto> getRecipes(CustomOauth2User user, AiRecipeSearchDto aiRecipeSearchDto,List<String> tags) {
+    return AiRecipeDto.fromEntity(aiRecipeQueryRepository.findAiRecipe(user, aiRecipeSearchDto,tags));
   }
 
   @Transactional
