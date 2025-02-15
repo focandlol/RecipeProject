@@ -16,13 +16,10 @@ public class TagDto {
 
   private String name;
 
-  private Long count;
-
   public static TagDto from(TagEntity tag) {
     return TagDto.builder()
         .id(tag.getId())
         .name(tag.getName())
-        .count(tag.getCount())
         .build();
   }
 }

@@ -27,6 +27,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;
@@ -103,7 +105,7 @@ public class TagServiceImpl implements TagService {
 
       batchUpdate(sql, batchArgs);
 
-      tagRedisService.saveTagInRedis(names, 1);
+      tagRedisService.saveTagInRedis(names, 1,1);
 
     } catch (Exception e) {
       throw new CustomException(FAILED_SAVE_TAG);
@@ -205,5 +207,11 @@ public class TagServiceImpl implements TagService {
   @Transactional
   public List<TagEntity> findByNameIn(List<String> names) {
     return tagRepository.findByNameIn(names);
+  }
+
+  @Transactional
+  public Page<TagDto> getTags(Pageable pageable) {
+    return tagRepository.findAll(pageable)
+        .map(entity -> TagDto.from(entity));
   }
 }

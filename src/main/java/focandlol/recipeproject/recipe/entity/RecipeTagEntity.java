@@ -1,6 +1,5 @@
 package focandlol.recipeproject.recipe.entity;
 
-import focandlol.recipeproject.airecipe.entity.AiRecipeEntity;
 import focandlol.recipeproject.tag.entity.TagEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,6 +7,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -23,7 +23,11 @@ import org.hibernate.annotations.OnDeleteAction;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "recipe_tag")
+@Table(name = "recipe_tag",
+    indexes = {
+        @Index(name = "idx_recipe_tag_recipe_id", columnList = "recipe_id"), //조인 시
+        @Index(name = "idx_recipe_tag_tag_id", columnList = "tag_id") // 조인 시
+    })
 public class RecipeTagEntity {
 
   @Id

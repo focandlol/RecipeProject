@@ -1,8 +1,11 @@
 package focandlol.recipeproject.tag.repository;
 
+import focandlol.recipeproject.tag.dto.TagDto;
 import focandlol.recipeproject.tag.entity.TagEntity;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -16,4 +19,6 @@ public interface TagRepository extends CrudRepository<TagEntity, Long> {
   @Modifying
   @Query("delete from TagEntity t where t.name in :tags")
   void deleteAllByNameIn(@Param("tags") List<String> tags);
+
+  Page<TagEntity> findAll(Pageable pageable);
 }
