@@ -15,11 +15,17 @@ public class UserController {
 
   private final UserService userService;
 
+  /**
+   * 본인 정보 조회
+   */
   @GetMapping("user")
   public UserDto getUser(@AuthenticationPrincipal CustomOauth2User user) {
     return userService.getUser(user);
   }
 
+  /**
+   * 탈퇴
+   */
   @DeleteMapping("user")
   public void deleteUser(@AuthenticationPrincipal CustomOauth2User user) {
     userService.deleteUser(user);

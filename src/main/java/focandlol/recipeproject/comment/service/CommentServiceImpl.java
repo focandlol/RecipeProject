@@ -58,6 +58,35 @@ public class CommentServiceImpl implements CommentService {
 
   /**
    * 대댓글 추가
+   * 유튜브 댓글처럼 만들었습니다.
+   * 깊이는 2로 제한했습니다.
+   *
+   * comment1 (원댓글, 깊이 1, parentId = null)
+   *
+   * comment2 (comment1 대댓글, 깊이2, parentId = comment1)
+   * comment3 (comment2 대대댓글, 깊이2, parentId = comment2의 parentId = comment1)
+   * ReplyCommentCreateDto.Response.fromEntity(commentRepository.save(CommentEntity.builder()
+   *         .parent(commentEntity.getParent() == null ? commentEntity : commentEntity.getParent())
+   * 위 코드가 깊이를 2로 제한하는 코드입니다.
+   * 여기서 commentEntity는 부모 댓글입니다.
+   *
+   * comment2 (대댓글): 원댓글(1층)에 대한 답글 → commentEntity는 원댓글(comment1), getParent는 null → comment2.parentId = comment1
+   *
+   * comment3 (대대댓글): 대댓글(comment2)에 대한 답글 → commentEntity는 comment2, getParent는 not null → comment3.parentId = commentEntity.getParent() (comment1)
+   *
+   * 대댓글, 대대댓글 모두 parent에 원댓글을 넣어서 2층으로 제한합니다.
+   *
+   * 다만 대댓글, 대대댓글 모두 깊이가 2이므로 구분이 어렵습니다.
+   * 이는 유튜브 처럼 대대댓글 부터는 작성 시 자동으로 부모의 id가 @부모 이름 <댓글내용> 이런 식으로 추가되는 방식으로 해결할 수 있을 것 같습니다.
+   * rere 필드를 추가해서 대대댓글 부터는 부모 댓글의 id 도 저장하는 방식으로 바꾸고 조회 시 rere에는 부모 댓글의 userId도 return 하도록 변경하였습니다.
+   *
+   *
+   * pr 답변
+   * api만 제공하는 서비스일 때를 고려 하지 못했네요.
+   * 일단 이번엔 깊이를 2로 정하고 유튜브처럼 만드는 것이 목적이니 현 구조를 유지하는게 좋을 것 같습니다.
+   * parent id를 대댓글 이하가 모두 원댓글로 잡은 것은 깊이를 2층으로 제한했으니 조회 시 최적화가 될 것 같아서 잡았습니다. (원댓글 조회 (페이징 적용) -> 해당 원댓글을 부모로 둔 댓글 조회)
+   * 지금까지는 fe 베이스를 당연하게 생각했는데 식견이 좀 넓어진 것 같습니다. 언제 기회가 되면 말씀해 주신 내용 고려하여 만들어보겠습니다.
+   * 한달동안 고생 많으셨습니다.
    */
   @Override
   public ReplyCommentCreateDto.Response addReplyComment(CustomOauth2User user, Long parentId,
@@ -127,6 +156,7 @@ public class CommentServiceImpl implements CommentService {
     CommentEntity commentEntity = commentRepository.findByIdFetch(id)
         .orElseThrow(() -> new CustomException(COMMENT_NOT_FOUND));
 
+    //댓글 작성자인지 확인
     validateSameUser(commentEntity, user.getId());
 
     commentEntity.updateComment(request.getContent());
@@ -139,6 +169,7 @@ public class CommentServiceImpl implements CommentService {
     CommentEntity commentEntity = commentRepository.findByIdFetch(id)
         .orElseThrow(() -> new CustomException(COMMENT_NOT_FOUND));
 
+    //댓글 작성자인지 확인
     validateSameUser(commentEntity, user.getId());
 
     commentRepository.delete(commentEntity);

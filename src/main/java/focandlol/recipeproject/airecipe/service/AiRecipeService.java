@@ -26,7 +26,7 @@ public interface AiRecipeService {
   void deleteRecipe(@AuthenticationPrincipal CustomOauth2User user, Long id);
 
   @Transactional
-  List<AiRecipeDto> getRecipes(CustomOauth2User user, AiRecipeSearchDto aiRecipeSearchDto, List<String> tags);
+  List<AiRecipeDto> getRecipes(CustomOauth2User user, AiRecipeSearchDto aiRecipeSearchDto);
 
   AiRecipeDetailsDto getRecipe(CustomOauth2User user, Long id);
 }

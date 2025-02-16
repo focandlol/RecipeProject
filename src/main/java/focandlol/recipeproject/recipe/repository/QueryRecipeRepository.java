@@ -3,7 +3,7 @@ package focandlol.recipeproject.recipe.repository;
 import static focandlol.recipeproject.recipe.entity.QRecipeEntity.*;
 import static focandlol.recipeproject.recipe.entity.QRecipeTagEntity.*;
 import static focandlol.recipeproject.tag.entity.QTagEntity.tagEntity;
-import static focandlol.recipeproject.type.RecipeSearchType.*;
+import static focandlol.recipeproject.type.RecipeSortType.*;
 
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -51,7 +51,7 @@ public class QueryRecipeRepository {
     return PageableExecutionUtils.getPage(content, pageable, () -> ids.size());
   }
 
-  //태그 전부 포함하는지
+  // 검색 조건 태그 모두 포함하는지(eg) 검색 조건 2개 -> 2개 모두 만족하는 것만 조회)
   private BooleanExpression havingCheck(List<String> tags) {
     if (tags == null || tags.isEmpty()) {
       return null;

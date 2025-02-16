@@ -161,8 +161,8 @@ public class AiRecipeServiceImpl implements AiRecipeService {
 
   @Override
   @Transactional
-  public List<AiRecipeDto> getRecipes(CustomOauth2User user, AiRecipeSearchDto aiRecipeSearchDto,List<String> tags) {
-    return AiRecipeDto.fromEntity(aiRecipeQueryRepository.findAiRecipe(user, aiRecipeSearchDto,tags));
+  public List<AiRecipeDto> getRecipes(CustomOauth2User user, AiRecipeSearchDto aiRecipeSearchDto) {
+    return AiRecipeDto.fromEntity(aiRecipeQueryRepository.findAiRecipe(user, aiRecipeSearchDto));
   }
 
   @Transactional

@@ -3,6 +3,7 @@ package focandlol.recipeproject.recipe.dto;
 import focandlol.recipeproject.recipe.entity.RecipeEntity;
 import focandlol.recipeproject.tag.entity.TagEntity;
 import focandlol.recipeproject.user.entity.UserEntity;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -20,6 +21,7 @@ public class RecipeCreateDto {
   @NoArgsConstructor
   @AllArgsConstructor
   @Builder
+  @Schema(name = "RecipeCreateRequest", description = "레시피 게시글 생성 요청 dto")
   public static class Request{
 
     @Size(max = 20)
@@ -55,6 +57,7 @@ public class RecipeCreateDto {
   @NoArgsConstructor
   @AllArgsConstructor
   @Builder
+  @Schema(name = "RecipeCreateResponse", description = "레시피 게시글 생성 응답 dto")
   public static class Response{
     private Long id;
 

@@ -1,6 +1,6 @@
 package focandlol.recipeproject.type;
 
-public enum RecipeSearchType {
+public enum RecipeSortType {
 
   LIKES, LATEST
 

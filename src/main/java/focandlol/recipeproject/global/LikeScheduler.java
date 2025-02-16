@@ -1,5 +1,7 @@
 package focandlol.recipeproject.global;
 
+import static focandlol.recipeproject.type.RedisTag.LIKE_UPDATE;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,7 +24,7 @@ public class LikeScheduler {
   @Scheduled(fixedRate = 20000)
   public void syncLike() {
     //upate_like : 변경된 좋아요가 있는 지 확인
-    Boolean exists = redisTemplate.hasKey("update_like");
+    Boolean exists = redisTemplate.hasKey(LIKE_UPDATE.toString());
 
     if (exists) {
       /**
@@ -34,9 +36,9 @@ public class LikeScheduler {
         public List<Object> execute(RedisOperations operations) throws DataAccessException {
           operations.multi();
           // 좋아요 변경된 레시피 조회
-          operations.opsForHash().entries("update_like");
+          operations.opsForHash().entries(LIKE_UPDATE.toString());
           // update_like 삭제
-          operations.delete("update_like");
+          operations.delete(LIKE_UPDATE.toString());
           // 트랜잭션 실행
           return operations.exec();
         }
@@ -46,7 +48,6 @@ public class LikeScheduler {
         return;
       }
 
-      // operations.opsForHash().entries("update_like"); 결과
       Object result = results.get(0);
 
       if (!(result instanceof Map<?, ?> map)) {

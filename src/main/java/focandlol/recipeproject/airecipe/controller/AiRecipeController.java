@@ -7,7 +7,6 @@ import focandlol.recipeproject.airecipe.dto.AiRecipeUpdateDto;
 import focandlol.recipeproject.airecipe.dto.CreateAiRecipeDto;
 import focandlol.recipeproject.airecipe.service.AiRecipeService;
 import focandlol.recipeproject.auth.dto.CustomOauth2User;
-import focandlol.recipeproject.recipe.dto.RecipeSearchDto;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -15,13 +14,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.Mapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -46,10 +42,13 @@ public class AiRecipeController {
    * ai레시피 리스트 조회
    * 검색 조건 requestbody로 받기 위해 PostMapping 사용
    */
-  @GetMapping("/airecipe")
+  @PostMapping("/airecipe/list")
   public List<AiRecipeDto> getRecipes(@AuthenticationPrincipal CustomOauth2User user,
-      @ModelAttribute AiRecipeSearchDto aiRecipeSearchDto, @RequestParam List<String> tags) {
-    return aiRecipeService.getRecipes(user, aiRecipeSearchDto, tags);
+       @RequestBody(required = false) AiRecipeSearchDto aiRecipeSearchDto) {
+    if (aiRecipeSearchDto == null) {
+      aiRecipeSearchDto = new AiRecipeSearchDto();
+    }
+    return aiRecipeService.getRecipes(user, aiRecipeSearchDto);
   }
 
   /**

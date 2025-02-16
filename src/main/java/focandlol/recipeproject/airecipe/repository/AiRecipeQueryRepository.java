@@ -24,7 +24,7 @@ public class AiRecipeQueryRepository {
     this.query = new JPAQueryFactory(em);
   }
 
-  public List<AiRecipeEntity> findAiRecipe(CustomOauth2User user, AiRecipeSearchDto aiRecipeSearchDto, List<String> tags){
+  public List<AiRecipeEntity> findAiRecipe(CustomOauth2User user, AiRecipeSearchDto aiRecipeSearchDto){
     return query
         .select(aiRecipeEntity)
         .from(aiRecipeEntity)
@@ -32,17 +32,16 @@ public class AiRecipeQueryRepository {
         .leftJoin(aiRecipeTagEntity.tag, tagEntity)
         .where(
             eqUser(user.getId()),
-            //containTag(aiRecipeSearchDto.getTags()),
-            containTag(tags),
+            containTag(aiRecipeSearchDto.getTags()),
             containKeyword(aiRecipeSearchDto.getKeyword())
         )
         .groupBy(aiRecipeEntity.id)
-        //.having(havingCheck(aiRecipeSearchDto.getTags()))
-        .having(havingCheck(tags))
+        .having(havingCheck(aiRecipeSearchDto.getTags()))
         .orderBy(order(aiRecipeSearchDto.isUpper()))
         .fetch();
   }
 
+  // 검색 조건 태그 모두 포함하는지(eg) 검색 조건 2개 -> 2개 모두 만족하는 것만 조회)
   private BooleanExpression havingCheck(List<String> tags) {
     if(tags == null || tags.isEmpty()){
       return null;

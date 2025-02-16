@@ -4,6 +4,7 @@ import static focandlol.recipeproject.global.exception.ErrorCode.ALREADY_LIKE;
 import static focandlol.recipeproject.global.exception.ErrorCode.NOT_ALREADY_LIKE;
 import static focandlol.recipeproject.global.exception.ErrorCode.RECIPE_NOT_FOUND;
 import static focandlol.recipeproject.global.exception.ErrorCode.USER_NOT_FOUND;
+import static focandlol.recipeproject.type.RedisTag.LIKE_UPDATE;
 
 import focandlol.recipeproject.auth.dto.CustomOauth2User;
 import focandlol.recipeproject.global.exception.CustomException;
@@ -59,7 +60,7 @@ public class LikeServiceImpl implements LikeService {
         .user(userEntity)
         .build());
 
-    redisTemplate.opsForHash().increment("update_like", String.valueOf(recipeEntity.getId()), 1);
+    redisTemplate.opsForHash().increment(LIKE_UPDATE.toString(), String.valueOf(recipeEntity.getId()), 1);
   }
 
   @Override
@@ -77,13 +78,6 @@ public class LikeServiceImpl implements LikeService {
 
     likeRepository.delete(likeEntity);
 
-    /**
-     * like_add : 게시글 당 좋아요 수, 계속 쌓임
-     * update_like : 해당 레시피의 scheduler 간격 사이에 변경된 좋아요 수, 매 scheduler 실행될때마다 삭제됨
-     * 게시글 당 좋아요 수 db와 정합성 맞추기 위해 사용
-     * LikeScheduler에서 update_like 조회해서 맞추고 삭제
-     */
-    redisTemplate.opsForHash().increment("like_add", String.valueOf(recipeEntity.getId()), -1);
-    redisTemplate.opsForHash().increment("update_like", String.valueOf(recipeEntity.getId()), -1);
+    redisTemplate.opsForHash().increment(LIKE_UPDATE.toString(), String.valueOf(recipeEntity.getId()), -1);
   }
 }

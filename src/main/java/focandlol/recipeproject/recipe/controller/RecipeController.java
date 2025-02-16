@@ -33,7 +33,7 @@ public class RecipeController {
     return recipeService.addRecipe(user, request);
   }
 
-  @GetMapping("/recipe")
+  @PostMapping("/recipe/list")
   public Page<RecipeDto> getRecipes(@RequestBody(required = false) RecipeSearchDto search,
       Pageable pageable) {
     if (search == null) {

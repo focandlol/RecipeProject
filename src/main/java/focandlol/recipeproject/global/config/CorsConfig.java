@@ -14,13 +14,13 @@ public class CorsConfig {
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration config = new CorsConfiguration();
 
-    config.setAllowCredentials(true); // 쿠키, 인증 정보 포함 허용
-    config.setAllowedOrigins(List.of("*")); // 🔥 모든 Origin 허용 (보안 필요 시 변경)
-    config.setAllowedHeaders(List.of("*")); // 모든 헤더 허용
-    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용할 HTTP 메서드
+    config.setAllowCredentials(true);
+    config.setAllowedOrigins(List.of("*"));
+    config.setAllowedHeaders(List.of("*"));
+    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", config); // 모든 경로에 적용
+    source.registerCorsConfiguration("/**", config);
     return source;
   }
 }

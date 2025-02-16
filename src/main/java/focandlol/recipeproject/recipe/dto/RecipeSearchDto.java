@@ -1,6 +1,6 @@
 package focandlol.recipeproject.recipe.dto;
 
-import focandlol.recipeproject.type.RecipeSearchType;
+import focandlol.recipeproject.type.RecipeSortType;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +15,7 @@ public class RecipeSearchDto {
 
   private String keyword;
 
-  private RecipeSearchType sortBy;
+  private RecipeSortType sortBy;
 
   private boolean upper;
 

@@ -126,6 +126,9 @@ public class RecipeServiceImpl implements RecipeService {
         .build();
   }
 
+  /**
+   * 레시피 삭제
+   */
   @Override
   public void deleteRecipe(CustomOauth2User user, Long id){
     validateDeleteRecipe(user, id);
@@ -133,6 +136,9 @@ public class RecipeServiceImpl implements RecipeService {
     recipeRepository.deleteById(id);
   }
 
+  /**
+   * 레시피 세부 사항 조회
+   */
   @Override
   public RecipeDetailsDto getRecipe(Long id){
     RecipeEntity recipeEntity = recipeRepository.findByIdFetch(id)
@@ -143,6 +149,9 @@ public class RecipeServiceImpl implements RecipeService {
     return RecipeDetailsDto.fromEntity(recipeEntity, tags);
   }
 
+  /**
+   * 본인이 작성한 레시피 조회
+   */
   @Override
   public Page<RecipeDto> getOwnRecipes(CustomOauth2User user, Pageable pageable) {
     Page<RecipeEntity> pages = recipeRepository.findByUserId(user.getId(), pageable);
@@ -158,6 +167,9 @@ public class RecipeServiceImpl implements RecipeService {
     );
   }
 
+  /**
+   * 본인이 좋아요 누른 레시피 조회
+   */
   @Override
   public Page<RecipeDto> getLikesRecipes(CustomOauth2User user, Pageable pageable) {
     Page<RecipeEntity> pages = recipeRepository.findLikeRecipeByUserId(user.getId(),

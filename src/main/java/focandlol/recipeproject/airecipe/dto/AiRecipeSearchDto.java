@@ -12,6 +12,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AiRecipeSearchDto {
 
+  private List<String> tags;
+
   private String keyword;
 
   private boolean upper;

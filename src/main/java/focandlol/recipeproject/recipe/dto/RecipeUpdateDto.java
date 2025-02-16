@@ -1,5 +1,6 @@
 package focandlol.recipeproject.recipe.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -16,6 +17,7 @@ public class RecipeUpdateDto {
   @NoArgsConstructor
   @AllArgsConstructor
   @Builder
+  @Schema(name = "RecipeUpdateRequest", description = "레시피 게시글 수정 요청 dto")
   public static class Request{
     @NotEmpty
     private List<@NotBlank String> tags;
@@ -39,6 +41,7 @@ public class RecipeUpdateDto {
   @NoArgsConstructor
   @AllArgsConstructor
   @Builder
+  @Schema(name = "RecipeUpdateResponse", description = "레시피 게시글 수정 응답 dto")
   public static class Response{
     private Long id;
 
