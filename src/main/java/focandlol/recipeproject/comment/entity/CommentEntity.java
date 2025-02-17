@@ -34,6 +34,7 @@ public class CommentEntity extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  //내용
   private String content;
 
   @ManyToOne(fetch = FetchType.LAZY)

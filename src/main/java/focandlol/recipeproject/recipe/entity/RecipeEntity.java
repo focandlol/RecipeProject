@@ -39,15 +39,19 @@ public class RecipeEntity extends BaseEntity {
   @Column(name = "recipe_id")
   private Long id;
 
+  //제목
   @Column(nullable = false, length = 40)
   private String title;
 
+  //레시피명
   @Column(nullable = false, length = 40)
   private String name;
 
+  //내용(요리 순서, 방법 등)
   @Column(columnDefinition = "TEXT")
   private String content;
 
+  //추가로 하고 싶은 말
   private String bonus;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -55,6 +59,7 @@ public class RecipeEntity extends BaseEntity {
   @OnDelete(action = OnDeleteAction.CASCADE)
   private UserEntity user;
 
+  //좋아요 수
   private Long count;
 
   public void updateRecipe(String title, String name, String content, String bonus) {

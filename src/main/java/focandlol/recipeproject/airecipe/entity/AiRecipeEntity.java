@@ -33,15 +33,19 @@ public class AiRecipeEntity extends BaseEntity {
   @Column(name = "ai_recipe_id")
   private Long id;
 
+  //레시피명
   @Column(nullable = false, length = 40)
   private String name;
 
+  //내용(요리 순서, 방법 등)
   @Column(columnDefinition = "TEXT")
   private String content;
 
+  //창의성
   @Column(nullable = false)
   private Double temperature;
 
+  //추가 요청 사항
   @Column(name = "extra_details")
   private String extraDetails;
 

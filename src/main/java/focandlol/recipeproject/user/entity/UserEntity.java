@@ -30,12 +30,15 @@ public class UserEntity extends BaseEntity {
   @Column(name = "user_id", nullable = false)
   private Long id;
 
+  //유저 구분용
   @Column(unique = true, nullable = false)
   private String username;
 
+  //이름
   @Column(length = 20, nullable = false)
   private String name;
 
+  //이메일
   @Column(length = 30, nullable = false)
   private String email;
 

@@ -30,9 +30,11 @@ public class TagEntity extends BaseEntity {
   @Column(name = "tag_id")
   private Long id;
 
+  //태그명
   @Column(unique = true, nullable = false, length = 20)
   private String name;
 
+  //사용 횟수
   @Column(nullable = false)
   @ColumnDefault("0")
   private Long count;
