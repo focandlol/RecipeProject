@@ -104,7 +104,7 @@ public class CommentServiceImpl implements CommentService {
          * rere : 대댓글과 대대댓글 분류용
          * 대댓글 이하는 모두 2층으로 표현
          * 따라서 대댓글인지 대대댓글인지 분류 어려움
-         * 대대댓글 부터는 rere에 바로 위 부모댓글 id를 넣어서 분류
+         * 대대댓글 부터는 rere에 바로 위 부모댓글 작성자 id를 넣어서 분류
          */
         .rere(commentEntity.getParent() == null ? null : commentEntity)
         .user(userEntity)

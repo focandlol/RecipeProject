@@ -23,7 +23,7 @@ public class LikeScheduler {
 
   @Scheduled(fixedRate = 20000)
   public void syncLike() {
-    //upate_like : 변경된 좋아요가 있는 지 확인
+    //like_update : 변경된 좋아요가 있는 지 확인
     Boolean exists = redisTemplate.hasKey(LIKE_UPDATE.toString());
 
     if (exists) {

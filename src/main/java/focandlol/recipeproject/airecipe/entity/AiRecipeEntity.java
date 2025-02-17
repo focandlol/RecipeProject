@@ -33,7 +33,7 @@ public class AiRecipeEntity extends BaseEntity {
   @Column(name = "ai_recipe_id")
   private Long id;
 
-  @Column(nullable = false, length = 20)
+  @Column(nullable = false, length = 40)
   private String name;
 
   @Column(columnDefinition = "TEXT")

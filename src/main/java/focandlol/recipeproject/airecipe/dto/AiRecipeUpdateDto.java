@@ -23,7 +23,7 @@ public class AiRecipeUpdateDto {
     private List<@NotBlank String> tags;
 
     @NotNull
-    @Size(max = 20)
+    @Size(max = 40)
     private String name;
 
     @NotNull

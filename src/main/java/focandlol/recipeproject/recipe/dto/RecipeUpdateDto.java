@@ -23,11 +23,11 @@ public class RecipeUpdateDto {
     private List<@NotBlank String> tags;
 
     @NotBlank
-    @Size(max = 20)
+    @Size(max = 40)
     private String title;
 
     @NotNull
-    @Size(max = 20)
+    @Size(max = 40)
     private String name;
 
     @Size(max = 200)

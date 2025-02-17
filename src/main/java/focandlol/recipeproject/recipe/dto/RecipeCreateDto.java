@@ -24,11 +24,11 @@ public class RecipeCreateDto {
   @Schema(name = "RecipeCreateRequest", description = "레시피 게시글 생성 요청 dto")
   public static class Request{
 
-    @Size(max = 20)
+    @Size(max = 40)
     @NotNull
     private String title;
 
-    @Size(max = 20)
+    @Size(max = 40)
     @NotNull
     private String name;
 

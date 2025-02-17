@@ -39,10 +39,10 @@ public class RecipeEntity extends BaseEntity {
   @Column(name = "recipe_id")
   private Long id;
 
-  @Column(nullable = false, length = 20)
+  @Column(nullable = false, length = 40)
   private String title;
 
-  @Column(nullable = false, length = 20)
+  @Column(nullable = false, length = 40)
   private String name;
 
   @Column(columnDefinition = "TEXT")
