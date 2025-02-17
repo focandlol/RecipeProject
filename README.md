@@ -14,7 +14,7 @@ http://15.164.64.144:8080/oauth2/authorization/naver 로 요청 후 naver 로그
 
 ## google 로그인은 도메인을 구매해야지만 사용 가능해서 제외 naver로그인 만 지원
 ## ERD
-![Image](https://github.com/user-attachments/assets/6286245c-ac32-4d04-8727-b46c58bc9d0f)
+![Image](https://github.com/user-attachments/assets/5b0e1086-6c9a-4904-ad37-51a6752d6330)
 ---
 
 ## 주요 기능
