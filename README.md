@@ -4,15 +4,17 @@
 사용자는 자신의 레시피를 공유하거나, AI가 제공하는 창의적인 레시피를 활용할 수 있습니다.
 
 ---
-## 주소 : http://15.164.64.144:8080/  
+## 주소 : http://15.164.64.144:8080  
 
 ## swagger 주소 : http://15.164.64.144:8080/swagger-ui/index.html  
 
 ## api 요청 전
-http://15.164.64.144:8080/oauth2/authorization/naver 로 요청 후 naver 로그인 -> jwt 토큰과 "/"로 redirect
+http://15.164.64.144:8080/oauth2/authorization/naver 로 요청 후 naver 로그인 -> jwt 토큰과 "/"로 redirect -> "/" 에서 jwt 토큰 리턴
 -> 모든 api 요청 전 Authorization 헤더에 Bearer <jwt 토큰> 넣어서 요청  
 
-## google 로그인은 도메인을 구매해야지만 사용 가능해서 제외 naver로그인 만 지원
+## google 로그인은 배포 시 도메인을 구매해야지만 사용 가능해서 제외(로컬일 때 사용하던 코드는 있음) naver로그인 만 지원  
+
+## 미리 레시피, 태그 데이터 좀 넣어놨습니다.
 ## ERD
 ![Image](https://github.com/user-attachments/assets/5b0e1086-6c9a-4904-ad37-51a6752d6330)
 ---
