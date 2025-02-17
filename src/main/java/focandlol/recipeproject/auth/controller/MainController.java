@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class TestController {
+public class MainController {
 
   /**
    * /oauth2/authorization/naver 혹은 /oauth2/authorization/google 요청
