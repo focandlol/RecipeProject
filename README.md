@@ -14,7 +14,7 @@ http://15.164.64.144:8080/oauth2/authorization/naver 로 요청 후 naver 로그
 
 ## google 로그인은 배포 시 도메인을 구매해야지만 사용 가능해서 제외(로컬일 때 사용하던 코드는 있음) naver로그인 만 지원  
 
-## 미리 데이터 좀 넣어놨습니다.
+## 미리 레시피, 태그 데이터 좀 넣어놨습니다.
 ## ERD
 ![Image](https://github.com/user-attachments/assets/5b0e1086-6c9a-4904-ad37-51a6752d6330)
 ---
