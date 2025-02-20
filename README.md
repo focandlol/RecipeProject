@@ -6,6 +6,9 @@
 ---
 ## 주소 : http://15.164.64.144:8080  
 
+## 테스트 id : gatheringtest
+## 테스트 pw : gathering123
+
 ## swagger 주소 : http://15.164.64.144:8080/swagger-ui/index.html  
 
 ## api 요청 전
