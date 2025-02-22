@@ -230,7 +230,7 @@ http://15.164.64.144:8080/oauth2/authorization/naver 로 요청 후 naver 로그
   - 'name': 태그 접두어 String
 ---
 
-## tech stack
+## Tech stack
 - Spring Boot
 - Mysql, Redis
 - OAuth 2.0 + JWT
